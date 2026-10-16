@@ -13,7 +13,7 @@ function rrect(w: number, r: number) {
   return s;
 }
 
-/** Builds the whole 3D set (logo, rings, halo, lead particles, grid, star field). Client-only. */
+/** Builds the whole 3D set (logo, rings, halo, lead particles, blueprint grid). Client-only. */
 export function buildRig() {
   const G = new THREE.Group(), P = new THREE.Group();
   G.add(P);
@@ -78,7 +78,10 @@ export function buildRig() {
     ld.push([Math.sin(b) * Math.cos(a), Math.sin(b) * Math.sin(a), Math.cos(b), Math.random()]);
   }
   lg.setAttribute('position', new THREE.BufferAttribute(lp, 3));
-  const leads = new THREE.Points(lg, new THREE.PointsMaterial({ color: 0xffffff, size: 0.07, transparent: true, opacity: 0, depthWrite: false }));
+  // round, fixed-pixel-size dots (no perspective growth, so nothing balloons when it passes close to the camera)
+  const dc = document.createElement('canvas'); dc.width = dc.height = 32;
+  const dx = dc.getContext('2d')!; dx.fillStyle = '#fff'; dx.beginPath(); dx.arc(16, 16, 15, 0, 6.283); dx.fill();
+  const leads = new THREE.Points(lg, new THREE.PointsMaterial({ color: 0xffffff, size: 3.2, sizeAttenuation: false, map: new THREE.CanvasTexture(dc), alphaTest: 0.4, transparent: true, opacity: 0, depthWrite: false }));
   G.add(r1, r2, halo, leads);
 
   // blueprint grid

@@ -5,3 +5,7 @@ export const sceneState = {
   camY: 1.2, camZ: 7.5, r2s: 1.3,
   sx: 2.3, sy: 0,                               // horizontal / vertical offsets (desktop vs mobile)
 };
+export type SceneState = typeof sceneState;
+
+// Test hook: lets Playwright read the live scene values (px, solid, grid...) to prove chapter hand-offs.
+if (typeof window !== 'undefined') (window as unknown as { __scene: typeof sceneState }).__scene = sceneState;

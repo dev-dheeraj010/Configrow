@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { PROMISE_PAYOFF, PROMISE_STEPS, tileHalfPx } from '@/lib/scene';
+import { RANGE } from '@/lib/scroll';
 
 const ITEMS = ['Exquisite design language', 'Optimized for peak performance', 'Google-optimized websites', 'Cross-platform designs', 'Continuous care, zero compromise'];
 const ANG = [-90, -18, 54, 126, 198]; // pentagon around the centre logo
@@ -22,7 +24,7 @@ export default function PromiseSection() {
       const r = el.getBoundingClientRect(), W = r.width, H = r.height, cx = W / 2, cy = H / 2;
       setVb(`0 0 ${W} ${H}`);
       if (window.innerWidth <= 800) { setGeo(null); return; }
-      const Rx = Math.min(W * 0.28, 430), Ry = Math.min(H * 0.25, 250), hs = H * 0.1; // hs = half logo-tile size on screen
+      const Rx = Math.min(W * 0.28, 430), Ry = Math.min(H * 0.25, 250), hs = tileHalfPx(H); // half the logo tile's size on screen, from the camera + scale the scene uses
       setGeo(ANG.map((deg, i) => {
         const t = (deg * Math.PI) / 180, x = cx + Rx * Math.cos(t), y = cy + Ry * Math.sin(t);
         const dx = x - cx, dy = y - cy, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
@@ -37,12 +39,12 @@ export default function PromiseSection() {
 
     let last = 0, lastDone = false;
     const st = ScrollTrigger.create({
-      trigger: '#promise', start: 'top top', end: 'bottom bottom',
+      trigger: '#promise', start: RANGE.pin.start, end: RANGE.pin.end,
       onUpdate: (t) => {
         const p = t.progress; let c = 0;
-        for (let i = 0; i < 5; i++) if (p >= 0.1 + i * 0.17) c = i + 1; // keep in sync with ScrollDirector glow steps
+        PROMISE_STEPS.forEach((th, i) => { if (p >= th) c = i + 1; }); // same thresholds the scene's glow uses (lib/scene.ts)
         if (c !== last) { last = c; setCount(c); }
-        const d = p >= 0.9; if (d !== lastDone) { lastDone = d; setDone(d); }
+        const d = p >= PROMISE_PAYOFF; if (d !== lastDone) { lastDone = d; setDone(d); }
       },
     });
     return () => { ro.disconnect(); st.kill(); };
