@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   title: { default: 'Configrow — Websites that build trust', template: '%s | Configrow' },
   description: 'Premium, SEO-ready websites for local businesses, built to generate leads.',
   applicationName: 'Configrow',
-  icons: { icon: '/cg-mark.png' },
   openGraph: { type: 'website', siteName: 'Configrow', locale: 'en_IN', url: SITE, title: 'Configrow — Websites that build trust', description: 'Premium, SEO-ready websites for local businesses, built to generate leads.' },
   twitter: { card: 'summary_large_image', title: 'Configrow — Websites that build trust', description: 'Premium, SEO-ready websites for local businesses, built to generate leads.' },
   alternates: { canonical: '/' },

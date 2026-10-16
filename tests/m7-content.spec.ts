@@ -22,14 +22,14 @@ test('FAQ answers use the supplied wording', async ({ page }) => {
   const ans = (q: string) => page.locator('details', { hasText: q });
   await expect(ans('Is hosting included?')).toContainText('completely free of cost for 1 year (365 days)');
   await expect(ans('Is hosting included?')).toContainText('purchased externally');
-  await expect(ans('Is hosting included?')).toContainText('renewal plan');
+  await expect(ans('Is hosting included?')).toContainText('valid for one year (365 days)');
   await expect(ans('How long will my website take?')).toContainText('Foundation: 7–10 business days');
   await expect(ans('How long will my website take?')).toContainText('Next-gen: 15–20 business days');
   await expect(ans('How do payments work?')).toContainText('40% advance'); await expect(ans('How do payments work?')).toContainText('remaining 60%');
   await expect(ans('Can I upgrade my plan later?')).toContainText('no upgrade policy');
   await expect(ans('How do I get started?')).toContainText('+91 78923 17834');
   expect(await page.locator('main [class*="[["]').count()).toBe(0);
-  expect(await page.locator('mark').count()).toBe(1); // the one open gap: hosting renewal terms
+  expect(await page.locator('mark').count()).toBe(0);
 });
 
 test('terms and privacy are separate pages with the supplied text', async ({ page }) => {
@@ -48,4 +48,14 @@ test('no background grid: hero scene has no grid-line pixels', async ({ page }) 
   const ok = await page.evaluate(() => (window as unknown as { __scene?: Record<string, number> }).__scene);
   expect(ok && 'grid' in ok).toBe(false);
   await page.screenshot({ path: 'shots/m7/hero-no-grid.png' });
+});
+
+test('terms: refund and hosting-cancellation clauses; favicon is square', async ({ page, request }) => {
+  await page.goto('/terms');
+  await expect(page.locator('article')).toContainText('cannot be refunded');
+  await expect(page.locator('article')).toContainText('Hosting can be cancelled on the day of renewal');
+  const icon = await request.get('/icon.png');
+  expect(icon.status()).toBe(200);
+  const b = await icon.body();
+  expect([b.readUInt32BE(16), b.readUInt32BE(20)]).toEqual([512, 512]);
 });
