@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
 const ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '*').split(',').map((s) => s.trim()).filter(Boolean);
-const WA_TO = (Deno.env.get('WHATSAPP_TO') ?? '').split(',').map((s) => s.replace(/\D/g, '')).filter(Boolean); // e.g. 919480933776,917892317834
+const WA_TO = (Deno.env.get('WHATSAPP_TO') ?? '919480933776,917892317834').split(',').map((s) => s.replace(/\D/g, '')).filter(Boolean); // e.g. 919480933776,917892317834
 const GRAPH = 'https://graph.facebook.com/v21.0';
 const MAX_PER_HOUR = 5;
 
@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
   if (digits.length < 8 || digits.length > 15) return reply({ error: 'Please enter a valid phone number.' }, 422, h);
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return reply({ error: 'Please enter a valid email.' }, 422, h);
 
-  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim();
+  const ip = (req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown').split(',')[0].trim();
   const ipHash = await sha256(`${ip}|${Deno.env.get('IP_SALT') ?? 'configrow'}`);
   const since = new Date(Date.now() - 3600_000).toISOString();
   const { count } = await sb.from('enquiries').select('id', { count: 'exact', head: true }).eq('ip_hash', ipHash).gte('created_at', since);

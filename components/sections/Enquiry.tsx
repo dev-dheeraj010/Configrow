@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import SpecularButton from '../layout/SpecularButton';
 
-const ENDPOINT = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/submit-enquiry`;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const ENDPOINT = SUPABASE_URL ? `${SUPABASE_URL}/functions/v1/submit-enquiry` : '';
 
 /** Enquiry form: posts to the Supabase Edge Function (saves the enquiry, then WhatsApps the team). */
 export default function Enquiry() {
@@ -14,6 +15,7 @@ export default function Enquiry() {
     const form = e.currentTarget, f = new FormData(form);
     setState('sending');
     try {
+      if (!ENDPOINT) throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set');
       const r = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '' },
@@ -47,7 +49,7 @@ export default function Enquiry() {
             thickness={1.2} glow={1} followMouse proximity={250} disabled={state === 'sending'} style={{ marginTop: 40 }}>
             {state === 'sending' ? 'Sending…' : 'Send enquiry'} <span>→</span>
           </SpecularButton>
-          <p role="status" style={{ fontSize: 14, minHeight: 24 }}>
+          <p role="status" aria-live="polite" style={{ fontSize: 14, minHeight: 24 }}>
             {state === 'sent' && "Thanks! We've got your enquiry and will call or WhatsApp you shortly."}
             {state === 'error' && (<>We couldn&apos;t send that. Please call <a className="ul" href="tel:+919480933776">+91 94809 33776</a> or email <a className="ul" href="mailto:info@configrow.in">info@configrow.in</a>.</>)}
           </p>

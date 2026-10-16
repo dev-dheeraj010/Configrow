@@ -34,7 +34,7 @@ export default function SmoothScroll() {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>('.rv').forEach((el) =>
-        gsap.from(el, { y: 50, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%' } })
+        gsap.from(el, { y: 50, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 94%' } })
       );
     });
     return () => ctx.revert();

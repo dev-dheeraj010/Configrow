@@ -159,3 +159,10 @@ input:focus-visible,textarea:focus-visible{outline:0;border-bottom-color:var(--t
   #fin{position:relative;inset:auto;min-height:100vh;padding-top:120px;pointer-events:auto}
   .fc,.cl{opacity:1!important}
 }
+/* enquiry: keep the whole form + pricing link inside one 900px-tall screen */
+#enquiry h2{font-size:clamp(30px,3.9vw,56px)}
+#enquiry .s,#enquiry{padding-top:104px;padding-bottom:48px}
+#enquiry label{margin:14px 0 2px}#enquiry input,#enquiry textarea{padding:8px 0}
+#enquiry .spec{margin-top:28px!important}
+@media(max-width:800px){#enquiry{padding-top:150px;padding-bottom:60px;align-items:flex-start}}
+#enquiry form p{margin-top:10px}#enquiry .c>p{margin-top:12px}
