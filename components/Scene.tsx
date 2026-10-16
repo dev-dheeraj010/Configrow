@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { buildRig } from '@/lib/buildRig';
+import { disposeTree } from '@/lib/dispose';
 import { sceneState as S } from '@/lib/sceneState';
 
 function Rig() {
@@ -10,6 +11,18 @@ function Rig() {
   const c1 = useMemo(() => new THREE.Color(0x6f87b8), []);
   const c2 = useMemo(() => new THREE.Color(0xdce6ff), []);
   const m = useRef({ x: 0, y: 0 });
+  const light = useRef(false);
+
+  // free GPU memory when the scene unmounts
+  useEffect(() => () => { disposeTree(rig.G); disposeTree(rig.gridGroup); }, [rig]);
+
+  // light colour scheme: fainter grid, dark lead particles (white ones would vanish on a pale page)
+  useEffect(() => {
+    const q = matchMedia('(prefers-color-scheme: light)');
+    const f = () => { light.current = q.matches; (rig.leads.material as THREE.PointsMaterial).color.set(q.matches ? 0x1b2a55 : 0xffffff); };
+    f(); q.addEventListener('change', f);
+    return () => q.removeEventListener('change', f);
+  }, [rig]);
 
   useEffect(() => {
     const onMove = (e: PointerEvent) => { m.current.x = e.clientX / innerWidth - 0.5; m.current.y = e.clientY / innerHeight - 0.5; };
@@ -31,7 +44,7 @@ function Rig() {
     (r1.material as THREE.MeshBasicMaterial).opacity = 0.5 * S.ring;
     (r2.material as THREE.MeshBasicMaterial).opacity = 0.35 * S.ring;
     (halo.material as THREE.SpriteMaterial).opacity = S.glow * 0.4; halo.scale.setScalar(7 + S.glow * 4);
-    (grid.material as THREE.LineBasicMaterial).opacity = S.grid * 0.4;
+    (grid.material as THREE.LineBasicMaterial).opacity = S.grid * (light.current ? 0.18 : 0.4);
     (leads.material as THREE.PointsMaterial).opacity = S.lead;
     if (S.lead > 0.01) {
       for (let i = 0; i < LN; i++) {

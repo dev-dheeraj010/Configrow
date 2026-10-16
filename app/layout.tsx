@@ -10,6 +10,10 @@ const inter = Inter({ subsets: ['latin'], weight: ['300', '500', '700'], variabl
 const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['400'], variable: '--font-mono' });
 
 const SITE = 'https://www.configrow.in';
+const ORG = {
+  '@context': 'https://schema.org', '@type': 'Organization', name: 'Configrow', url: SITE, email: 'info@configrow.in', telephone: '+91 94809 33776',
+  sameAs: ['https://www.instagram.com/configrow.dev'], description: 'Premium, SEO-ready websites for local businesses, built to generate leads.',
+};
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: { default: 'Configrow — Websites that build trust', template: '%s | Configrow' },
@@ -27,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${mono.variable}`}>
       <body>
         <a className="skiplink" href="#content">Skip to content</a>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG) }} />
         <SmoothScroll />
         <ProgressBar />
         <Header />

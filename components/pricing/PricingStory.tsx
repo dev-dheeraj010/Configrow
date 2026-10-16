@@ -9,6 +9,7 @@ import { PLANS } from '@/lib/plans';
 import { lenisControl } from '@/components/layout/SmoothScroll';
 import { X0, L, PRICE_AT, ZOOM_AT, finaleStart, storyLength, stageHeightVh } from '@/lib/story';
 import { prefersReducedMotion } from '@/lib/scroll';
+import { disposeTree } from '@/lib/dispose';
 
 const W = 3.2, RR = 0.5, VH = 2 * 8 * Math.tan((25 * Math.PI) / 180);
 const T = storyLength(PLANS.length);       // timeline length in units of 100vh (see lib/story.ts for the per-plan map)
@@ -42,6 +43,7 @@ export default function PricingStory() {
     const tr = q('#track');
 
     let R: THREE.WebGLRenderer | null = null;
+    let rootScene: THREE.Scene | null = null;
     let O: any[] = [{}, {}, {}];
     const S: any = { pan: 0, zoom: 1, pa: 1 };
     let tick: ((t: number) => void) | null = null;
@@ -50,7 +52,7 @@ export default function PricingStory() {
     try {
       R = new THREE.WebGLRenderer({ canvas: cv.current!, antialias: true, alpha: true });
       R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
+      const scene = (rootScene = new THREE.Scene()), cam = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
       scene.add(new THREE.AmbientLight(0x6f8fd8, 0.8));
       const pl = new THREE.PointLight(0x7fa6ff, 2.4, 60); pl.position.set(3, 4, 6); scene.add(pl);
       const dl = new THREE.DirectionalLight(0xffffff, 0.7); dl.position.set(-2, 2, 6); scene.add(dl);
@@ -194,6 +196,7 @@ export default function PricingStory() {
       ctx.revert();
       if (tick) gsap.ticker.remove(tick);
       window.removeEventListener('resize', onResize);
+      if (rootScene) disposeTree(rootScene);
       R?.dispose();
       if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
     };

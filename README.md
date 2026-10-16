@@ -2,13 +2,14 @@
 
 Next.js 14 (App Router) · React 18 · Three.js / React Three Fiber · GSAP ScrollTrigger · Lenis · TypeScript · Supabase (database + Edge Function) · WhatsApp Cloud API
 
-> Status: ported from the approved HTML prototypes in `prototype/`. It has NOT been installed, built or run yet (no network when it was generated), so expect a few small fixes on the first `npm run dev`. The Supabase function and WhatsApp alerts are also untested against live accounts.
+> Status: rebuilt to the brief in `CLAUDE.md`. `npm run build`, `npm run typecheck` and the Playwright suite pass. The Supabase function and WhatsApp alerts are verified only against mocked responses; they still need a live test with your accounts (see `supabase/README.md`, step 8).
 
 ## Run locally
 ```bash
 npm install
 cp .env.local.example .env.local      # fill in your Supabase URL + anon key
 npm run dev                           # http://localhost:3000
+npm run build && npm test             # production build + Playwright checks (first time: npx playwright install chromium)
 ```
 
 ## Pages
@@ -41,19 +42,26 @@ Full step-by-step guide in `supabase/README.md`. In short:
 
 ## Structure
 ```
-app/            layout.tsx, page.tsx (home), pricing/ faq/ privacy/ terms/, not-found.tsx, globals.css (all styling + tokens)
-components/     Header (pill bar, hides in the Promise chapter, mobile menu), Footer, Scene + ScrollDirector (home 3D),
-                SmoothScroll (Lenis + reveals), SpecularButton, LegalPage, pricing/PricingStory (pricing 3D), sections/*
-lib/            buildRig.ts (logo + rings + grid), markData.ts (traced CG outline), sceneState.ts, plans.ts (prices + features), legalHtml.ts
+app/            layout.tsx, page.tsx (home), pricing/ faq/ privacy/ terms/, not-found.tsx, sitemap.ts, robots.ts, opengraph-image.tsx, globals.css (tokens + all styling)
+components/
+  layout/       Header (floating bar, hides in the Promise pin, accessible mobile menu), Footer, ProgressBar, SmoothScroll (Lenis), SpecularButton
+  Scene.tsx, SceneLoader.tsx (R3F canvas, WebGL check + error boundary), ScrollDirector.tsx (drives the logo, one scrubbed timeline per chapter)
+  sections/     Hero, Services (+ServicesMotion), Promise, Growth, Enquiry
+  pricing/      PricingStory (pricing 3D story)
+lib/            scene.ts (keyframes + shared thresholds), scroll.ts (DOM-derived scroll ranges), story.ts (pricing timeline units), sceneState.ts,
+                buildRig.ts, markData.ts, dispose.ts, plans.ts (prices + features), legalHtml.ts
 supabase/       migration, Edge Function, config snippet, README, secrets example
-prototype/      the approved HTML prototypes (home, pricing, FAQ/legal/404) for visual reference
-public/         cg-mark.png (header + favicon), logo-original.svg
+tests/          Playwright specs (layout, static pages, Services timing, home chapters, pricing story, form, accessibility)
+prototype/      the approved HTML prototypes, for visual reference
+public/         cg-mark.png, logo-original.svg
 ```
 
-## Things to keep in sync
-- Home timeline (`components/ScrollDirector.tsx`): `SERVICES_EXTRA` (1.5) = Services height (250vh) minus 100vh; card steps are `TH` in `components/sections/ServiceCards.tsx`; the five promise thresholds in `components/sections/Promise.tsx` (`0.1 + i*0.17`) match the glow steps in `ScrollDirector.tsx`.
-- Pricing timeline (`components/pricing/PricingStory.tsx`): `T` = timeline length, `L` = length of one plan block; `#stage` height in `globals.css` is `(T + 1) × 100vh`. Change one, change the other.
-- Prices and features live only in `lib/plans.ts`. The FAQ and Terms mention the same prices in text (`lib/legalHtml.ts`), so update those too.
+## How scrolling is wired (no magic numbers)
+- Heights live only in CSS (`#services` 250vh, `#promise` 300vh). JS never repeats them.
+- `lib/scroll.ts` gives two ranges read from each section's own element: **enter** (section top travels bottom to top of the viewport) and **pin** (sticky stage held).
+- `ScrollDirector.tsx` has one scrubbed timeline per chapter; each tween is `fromTo(previous chapter's end values to this chapter's)` using `keyframes()` in `lib/scene.ts`, so chapters can't fight over a value.
+- Services cards: one scrubbed timeline over the pin (`ServicesMotion.tsx`), windows in `lib/scene.ts` (head 0-.06, cards .06-.30 / .34-.58 / .62-.86). Promise thresholds (`PROMISE_STEPS`) are shared by the scene glow and the DOM nodes.
+- Pricing: `lib/story.ts` holds the unit lengths; the stage height is computed from them (`stageHeightVh`).
 
 ## Brand
 Colours: #00091b (main), #0652dd (accent, used sparingly), white text. Font: Inter (+ JetBrains Mono for small labels).
