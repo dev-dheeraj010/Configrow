@@ -9,10 +9,16 @@ import ProgressBar from '@/components/layout/ProgressBar';
 const inter = Inter({ subsets: ['latin'], weight: ['300', '500', '700'], variable: '--font-inter' });
 const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['400'], variable: '--font-mono' });
 
+const SITE = 'https://www.configrow.in';
 export const metadata: Metadata = {
-  title: 'Configrow — Websites that build trust',
+  metadataBase: new URL(SITE),
+  title: { default: 'Configrow — Websites that build trust', template: '%s | Configrow' },
   description: 'Premium, SEO-ready websites for local businesses, built to generate leads.',
+  applicationName: 'Configrow',
   icons: { icon: '/cg-mark.png' },
+  openGraph: { type: 'website', siteName: 'Configrow', locale: 'en_IN', url: SITE, title: 'Configrow — Websites that build trust', description: 'Premium, SEO-ready websites for local businesses, built to generate leads.' },
+  twitter: { card: 'summary_large_image', title: 'Configrow — Websites that build trust', description: 'Premium, SEO-ready websites for local businesses, built to generate leads.' },
+  alternates: { canonical: '/' },
 };
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { gaps } from '@/components/LegalPage';
 import { FAQ_HTML } from '@/lib/legalHtml';
 
-export const metadata: Metadata = { title: 'FAQ — Configrow', description: 'Answers to the questions local business owners ask before starting a website.' };
+export const metadata: Metadata = { title: 'FAQ', description: 'Answers to the questions local business owners ask before starting a website.', alternates: { canonical: '/faq' } };
 
 export default function Faq() {
   return (
