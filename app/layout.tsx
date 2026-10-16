@@ -11,8 +11,8 @@ const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['400'], variable: '--
 
 const SITE = 'https://www.configrow.in';
 const ORG = {
-  '@context': 'https://schema.org', '@type': 'Organization', name: 'Configrow', url: SITE, email: 'info@configrow.in', telephone: '+91 94809 33776',
-  sameAs: ['https://www.instagram.com/configrow.dev'], description: 'Premium, SEO-ready websites for local businesses, built to generate leads.',
+  '@context': 'https://schema.org', '@type': 'Organization', name: 'Configrow', url: SITE, email: 'info@configrow.in', telephone: ['+91 94809 33776', '+91 78923 17834'],
+  sameAs: ['https://www.youtube.com/@Configrow.01', 'https://x.com/Configrow_01', 'https://www.instagram.com/configrow.in'], description: 'Premium, SEO-ready websites for local businesses, built to generate leads.',
 };
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

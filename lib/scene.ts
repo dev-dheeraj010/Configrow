@@ -31,8 +31,8 @@ type Fields = Omit<SceneState, 'sx' | 'sy'>;
  * so a transition is always a fromTo(previous -> this) and neighbouring chapters share their boundary values.
  */
 export function keyframes(desk: boolean, sx: number, sy: number): Record<Chapter, Fields> {
-  const hero: Fields = { px: sx * 1.35, py: sy, s: desk ? 0.85 : 1, rx: 0.1, ry: -0.45, solid: 0, glow: 0, lead: 0, grid: 1, ring: 1, camY: 1.2, camZ: 7.5, r2s: 1.3 };
-  const services: Fields = { ...hero, px: -sx * 0.12, ry: 0.35, solid: 1, grid: 0, camY: 0, s: 1 };
+  const hero: Fields = { px: sx * 1.35, py: sy, s: desk ? 0.85 : 1, rx: 0.1, ry: -0.45, solid: 0, glow: 0, lead: 0, ring: 1, camY: 1.2, camZ: 7.5, r2s: 1.3 };
+  const services: Fields = { ...hero, px: -sx * 0.12, ry: 0.35, solid: 1, camY: 0, s: 1 };
   const promise: Fields = { ...services, px: 0, py: desk ? sy : 0.9, ry: PI2, s: PROMISE_SCALE, camZ: PROMISE_CAMZ, ring: 0, glow: 1, r2s: 2.1 };
   const growth: Fields = { ...promise, px: sx, py: sy, ry: PI2 + 0.35, s: 1, lead: 1, camZ: 6.5, ring: 1 };
   const enquiry: Fields = { ...growth, px: -sx * 1.35, ry: PI2 - 0.25, lead: 0.35, ...(desk ? {} : { s: 0.3, py: 2.4 }) }; // phones: small mark behind the form heading

@@ -62,10 +62,9 @@ for (const v of VIEWPORTS) {
       await page.waitForTimeout(1500);
       // scene state is module-level; read it through the canvas-independent global hook if present
       await goToPin(page, 0);
-      const ok = await page.evaluate(() => (window as unknown as { __scene?: { px: number; solid: number; grid: number } }).__scene);
+      const ok = await page.evaluate(() => (window as unknown as { __scene?: { px: number; solid: number} }).__scene);
       expect(ok, 'window.__scene hook (dev/test only)').toBeTruthy();
       expect(ok!.solid).toBeCloseTo(1, 1);
-      expect(ok!.grid).toBeCloseTo(0, 1);
     });
   });
 }

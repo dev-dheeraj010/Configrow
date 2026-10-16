@@ -13,7 +13,7 @@ type Key = keyof ReturnType<typeof keyframes>['hero'];
  * element (lib/scroll.ts), so the scene can never drift from the real section heights.
  *
  * Scroll map (every range is read from the DOM; "enter" = section top travels bottom -> top of viewport, "pin" = sticky stage held):
- *  #services  enter  Hero -> Services    logo drifts left of centre, wireframe fills in, grid fades (Blueprint -> Build)
+ *  #services  enter  Hero -> Services    logo drifts left of centre, wireframe fills in (Blueprint -> Build)
  *  #services  pin    cards (Services.tsx) the logo holds still, so it can't fight the cards
  *  #promise   enter  Services -> Promise logo glides to the centre, spins once, shrinks to the hub; rings fade out in the last 20%
  *  #promise   pin    five promises       glow steps up at PROMISE_STEPS, outer ring widens (Launch)

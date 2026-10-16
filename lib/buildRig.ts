@@ -13,7 +13,7 @@ function rrect(w: number, r: number) {
   return s;
 }
 
-/** Builds the whole 3D set (logo, rings, halo, lead particles, blueprint grid). Client-only. */
+/** Builds the whole 3D set (logo, rings, halo, lead particles). Client-only. */
 export function buildRig() {
   const G = new THREE.Group(), P = new THREE.Group();
   G.add(P);
@@ -84,19 +84,5 @@ export function buildRig() {
   const leads = new THREE.Points(lg, new THREE.PointsMaterial({ color: 0xffffff, size: 3.2, sizeAttenuation: false, map: new THREE.CanvasTexture(dc), alphaTest: 0.4, transparent: true, opacity: 0, depthWrite: false }));
   G.add(r1, r2, halo, leads);
 
-  // blueprint grid
-  // A big floor plus a back wall (same cell size, shared material) so the grid fills the whole viewport, not just a patch under the logo.
-  const CELL = 24 / 36, FLOOR_Y = -2.6, WALL_Z = -20;
-  const grid = new THREE.GridHelper(160, Math.round(160 / CELL), 0x233c7d, 0x142a5e);
-  grid.position.y = FLOOR_Y;
-  const gridMat = grid.material as THREE.LineBasicMaterial;
-  gridMat.transparent = true;
-  const wall = new THREE.GridHelper(160, Math.round(160 / CELL), 0x233c7d, 0x142a5e);
-  wall.material = gridMat;
-  wall.rotation.x = Math.PI / 2;
-  wall.position.set(0, FLOOR_Y + 80, WALL_Z);
-  const gridGroup = new THREE.Group();
-  gridGroup.add(grid, wall);
-
-  return { G, P, tileM, markM, rimM, lm, r1, r2, halo, leads, lg, lp, ld, LN, grid, gridGroup };
+  return { G, P, tileM, markM, rimM, lm, r1, r2, halo, leads, lg, lp, ld, LN };
 }

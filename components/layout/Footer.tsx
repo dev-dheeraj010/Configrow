@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import SocialIcons from './SocialIcons';
 
 export default function Footer() {
   return (
@@ -18,13 +19,14 @@ export default function Footer() {
         </div>
         <div>
           <h4>CONNECT</h4>
-          <ul><li><a href="https://www.instagram.com/configrow.dev" target="_blank" rel="noopener noreferrer">Instagram</a></li></ul>
+          <SocialIcons />
         </div>
         <div>
           <h4>CONTACT</h4>
           <ul>
             <li><a href="mailto:info@configrow.in">info@configrow.in</a></li>
             <li><a href="tel:+919480933776">+91 94809 33776</a></li>
+            <li><a href="tel:+917892317834">+91 78923 17834</a></li>
             <li>www.configrow.in</li>
           </ul>
         </div>

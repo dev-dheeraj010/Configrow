@@ -168,3 +168,9 @@ input:focus-visible,textarea:focus-visible{outline:0;border-bottom-color:var(--t
 #enquiry form p{margin-top:10px}#enquiry .c>p{margin-top:12px}
 /* light scheme: dark amber text on pale yellow keeps [[gap]] markers and the draft notice readable (>= 4.5:1) */
 @media(prefers-color-scheme:light){:root:not([data-theme="dark"]) mark{background:#ffe79a;color:#4a3100}:root:not([data-theme="dark"]) .dr{color:#6b4700;border-color:rgba(107,71,0,.6)}}
+
+/* footer social buttons: brand-blue line icons in hairline round buttons */
+:root{--ico:#3b82ff}@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--ico:#0652dd}}
+.soc{display:flex;gap:12px;list-style:none;margin:0;padding:0}
+.soc a{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--ln);border-radius:14px;color:var(--ico);transition:border-color .2s,color .2s,background .2s}
+.soc a:hover{border-color:var(--ico);background:color-mix(in srgb,var(--ico) 10%,transparent)}

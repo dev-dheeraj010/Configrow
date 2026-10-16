@@ -14,9 +14,9 @@ function Rig() {
   const light = useRef(false);
 
   // free GPU memory when the scene unmounts
-  useEffect(() => () => { disposeTree(rig.G); disposeTree(rig.gridGroup); }, [rig]);
+  useEffect(() => () => { disposeTree(rig.G); }, [rig]);
 
-  // light colour scheme: fainter grid, dark lead particles (white ones would vanish on a pale page)
+  // light colour scheme: dark lead particles (white ones would vanish on a pale page)
   useEffect(() => {
     const q = matchMedia('(prefers-color-scheme: light)');
     const f = () => { light.current = q.matches; (rig.leads.material as THREE.PointsMaterial).color.set(q.matches ? 0x1b2a55 : 0xffffff); };
@@ -32,7 +32,7 @@ function Rig() {
 
   useFrame(({ clock, camera }, delta) => {
     const t = clock.elapsedTime, k = delta * 60, p = m.current;
-    const { G, P, r1, r2, tileM, markM, rimM, lm, halo, leads, lg, lp, ld, LN, grid } = rig;
+    const { G, P, r1, r2, tileM, markM, rimM, lm, halo, leads, lg, lp, ld, LN } = rig;
     G.position.set(S.px, S.py, 0); G.rotation.set(S.rx, S.ry, 0); G.scale.setScalar(S.s);
     P.position.y = Math.sin(t * 0.8) * 0.08;
     P.rotation.y += (p.x * 0.5 - P.rotation.y) * 0.05;
@@ -44,7 +44,6 @@ function Rig() {
     (r1.material as THREE.MeshBasicMaterial).opacity = 0.5 * S.ring;
     (r2.material as THREE.MeshBasicMaterial).opacity = 0.35 * S.ring;
     (halo.material as THREE.SpriteMaterial).opacity = S.glow * 0.4; halo.scale.setScalar(7 + S.glow * 4);
-    (grid.material as THREE.LineBasicMaterial).opacity = S.grid * (light.current ? 0.18 : 0.4);
     (leads.material as THREE.PointsMaterial).opacity = S.lead;
     if (S.lead > 0.01) {
       for (let i = 0; i < LN; i++) {
@@ -65,7 +64,6 @@ function Rig() {
       <pointLight position={[3, 4, 5]} color={0x7fa6ff} intensity={2.4} distance={30} />
       <directionalLight position={[-2, 2, 6]} intensity={0.7} />
       <primitive object={rig.G} />
-      <primitive object={rig.gridGroup} />
     </>
   );
 }

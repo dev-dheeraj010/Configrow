@@ -2,7 +2,7 @@
 
 ## Who and what
 Configrow is a web development agency for local businesses. It sells premium, SEO-ready websites built for lead generation. This repo is Configrow's own marketing website. Brand promise: *"Great websites build trust. Trust drives leads. Leads grow businesses."*
-- Site: www.configrow.in · Email: info@configrow.in · Phone: +91 94809 33776 · Instagram: @configrow.dev
+- Site: www.configrow.in · Email: info@configrow.in · Phone: +91 94809 33776 · Instagram: instagram.com/configrow.in · YouTube: @Configrow.01 · X: @Configrow_01
 - Services: HTML Web Development · Next.js / Node.js · PHP Web Development · App development (coming soon)
 - Founders: Praadhyun Sai H (Marketing and Sales), Dheeraj Murthy (Development). Do not put founder names on the site unless asked.
 
@@ -23,7 +23,7 @@ No ambient star/particle field (the only particles allowed are the white "lead" 
 Floating rounded bar: height 60px, width min(1240px, 100% − 32px), top 14px, radius 20, hairline border, blurred background. Logo mark left (26px tall), plain nav links right (Services, Promise, About, Pricing, FAQ, Enquiry; active section highlighted with a small dot), then the small specular "Start a project →" button. At scroll 0 the bar is lighter; it becomes frosted after scrolling. While scrolling **down** through the pinned Promise chapter the bar slides away and a standalone "Start a project" button stays top-right; scrolling up brings the bar back. Under 800px: logo, CTA and a hamburger opening a full-screen menu (links + Close; Escape closes; body scroll locked).
 
 ## Footer
-Four columns: tagline "Premium websites that turn visitors into leads." · MENU (Services, Promise, About, Pricing, Enquiry, FAQ) · CONNECT (Instagram) · CONTACT (email, phone, website). Bottom bar: wide-spaced CONFIGROW wordmark, © 2026 CONFIGROW — ALL RIGHTS RESERVED, FAQ · Privacy Policy · Terms and Conditions.
+Four columns: tagline "Premium websites that turn visitors into leads." · MENU (Services, Promise, About, Pricing, Enquiry, FAQ) · CONNECT (blue icon buttons: YouTube, X, Instagram) · CONTACT (email, both phones: +91 94809 33776 and +91 78923 17834, website). Bottom bar: wide-spaced CONFIGROW wordmark, © 2026 CONFIGROW — ALL RIGHTS RESERVED, FAQ · Privacy Policy · Terms and Conditions.
 
 ## Home page / — "The Build" scrollytelling
 One fixed 3D scene behind the page. The hero object is the CG logo: a rounded tile (extruded) with the extruded traced mark in front (grey→blue vertex colours), a thin glowing rim, wireframe edges, two orbit rings, a halo sprite, a blueprint grid, and 360 white "lead" particles. It changes with scroll: **Blueprint** (wireframe over a perspective grid, camera tilted down) → **Build** (faces fill in, solid and lit, grid fades) → **Launch** (glow steps up with each promise, rings fade out while the hub plays and return after) → **Growth** (lead particles stream out) → calm for the enquiry.
