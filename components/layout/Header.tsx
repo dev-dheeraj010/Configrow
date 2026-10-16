@@ -17,7 +17,7 @@ const NAV = [
 
 /** Plain nav link (hover = brighter, active = brighter + dot). */
 function Pill({ label, href, active }: { label: string; href: string; active: boolean }) {
-  return <Link href={href} className={'pn' + (active ? ' act' : '')}>{label}</Link>;
+  return <Link href={href} className={'pn' + (active ? ' act' : '')} aria-current={active ? 'true' : undefined}>{label}</Link>;
 }
 
 export default function Header() {
@@ -27,6 +27,8 @@ export default function Header() {
   const [active, setActive] = useState('');
   const [menu, setMenu] = useState(false);
   const last = useRef(0);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLButtonElement>(null);
 
   // scroll behaviour: lighter bar at the top, hides while scrolling down through the pinned Promise chapter
   useEffect(() => {
@@ -53,9 +55,20 @@ export default function Header() {
   useEffect(() => {
     document.body.style.overflow = menu ? 'hidden' : '';
     if (menu) lenisControl.stop(); else lenisControl.start();
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(false); };
+    const box = menuRef.current;
+    const focusables = () => Array.from(box?.querySelectorAll<HTMLElement>('a[href],button') ?? []);
+    if (menu) focusables()[0]?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (!menu) return;
+      if (e.key === 'Escape') { setMenu(false); opener.current?.focus(); return; }
+      if (e.key !== 'Tab') return;
+      const f = focusables(); if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
   }, [menu]);
   useEffect(() => { setMenu(false); }, [pathname]);
 
@@ -66,15 +79,15 @@ export default function Header() {
           <Image src="/cg-mark.png" alt="Configrow" width={46} height={26} priority className="lg" />
         </Link>
         <div className="hr">
-          <nav>{NAV.map((n) => <Pill key={n.id} label={n.label} href={n.href} active={active === n.id} />)}</nav>
+          <nav aria-label="Primary">{NAV.map((n) => <Pill key={n.id} label={n.label} href={n.href} active={active === n.id} />)}</nav>
           <SpecularButton href="/#enquiry" size="sm" radius={12}>Start a project <span>→</span></SpecularButton>
-          <button className="mb" type="button" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><span /><span /></button>
+          <button ref={opener} className="mb" type="button" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><span /><span /></button>
         </div>
       </header>
       {/* while the bar is hidden the call to action stays reachable */}
       <SpecularButton href="/#enquiry" size="sm" radius={12} className={'cta2' + (hidden ? ' show' : '')}>Start a project <span>→</span></SpecularButton>
-      <div id="mnav" className={menu ? 'on' : ''}>
-        <button className="mc" type="button" onClick={() => setMenu(false)}>CLOSE</button>
+      <div id="mnav" ref={menuRef} className={menu ? 'on' : ''} role="dialog" aria-modal="true" aria-label="Menu" aria-hidden={!menu}>
+        <button className="mc" type="button" onClick={() => { setMenu(false); opener.current?.focus(); }}>CLOSE</button>
         {NAV.map((n) => <Link key={n.id} className="ml" href={n.href} onClick={() => setMenu(false)}><i>{n.n}</i>{n.label}</Link>)}
       </div>
     </>

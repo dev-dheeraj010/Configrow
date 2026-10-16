@@ -6,7 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MARK } from '@/lib/markData';
 import { PLANS } from '@/lib/plans';
-import { lenisControl } from '@/components/SmoothScroll';
+import { lenisControl } from '@/components/layout/SmoothScroll';
 
 const W = 3.2, RR = 0.5, VH = 2 * 8 * Math.tan((25 * Math.PI) / 180);
 const T = 12.8, X0 = 0.3, L = 3.7;          // timeline length / start offset / length of one plan block (units of 100vh)

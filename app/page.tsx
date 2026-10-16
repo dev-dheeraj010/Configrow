@@ -13,6 +13,7 @@ export default function Home() {
       <SceneLoader />
       <ScrollDirector />
       <main id="main">
+        <span id="content" />
         <Hero />
         <Services />
         <PromiseSection />

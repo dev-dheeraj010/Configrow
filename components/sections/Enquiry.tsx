@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
-import SpecularButton from '../SpecularButton';
+import SpecularButton from '../layout/SpecularButton';
 
 const ENDPOINT = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/submit-enquiry`;
 

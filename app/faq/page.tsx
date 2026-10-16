@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: 'FAQ — Configrow', description: 'An
 
 export default function Faq() {
   return (
-    <main className="page lw">
+    <main id="content" className="page lw">
       <div className="k">FAQ</div>
       <h1>Questions, answered<b>.</b></h1>
       <p className="lead">Everything local business owners usually ask before starting a website. Can&apos;t find yours? Call us.</p>

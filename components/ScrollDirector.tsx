@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { sceneState as S } from '@/lib/sceneState';
@@ -18,8 +18,6 @@ const SERVICES_EXTRA = 1.5;
  *  5+o -> 6+o    About -> Enquiry    | logo moves left, calm
  */
 export default function ScrollDirector() {
-  const bar = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const upd = () => { const wide = window.innerWidth > 800; S.sx = wide ? 2.3 : 0; S.sy = wide ? 0 : 1.9; };
@@ -42,9 +40,8 @@ export default function ScrollDirector() {
       tl.to(S, { ring: 0, duration: 0.3 }, 1.8 + o).to(S, { ring: 1, duration: 0.5 }, 3.9 + o);
     });
 
-    const progress = ScrollTrigger.create({ trigger: '#main', start: 'top top', end: 'bottom bottom', onUpdate: (t) => { if (bar.current) bar.current.style.transform = `scaleX(${t.progress})`; } });
-    return () => { ScrollTrigger.removeEventListener('refreshInit', upd); progress.kill(); mm.revert(); };
+    return () => { ScrollTrigger.removeEventListener('refreshInit', upd); mm.revert(); };
   }, []);
 
-  return (<><div className="glow" /><div id="bar" ref={bar} /></>);
+  return (<div className="glow" />);
 }

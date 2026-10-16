@@ -3,7 +3,7 @@ export const gaps = (html: string) => html.replace(/\[\[(.*?)\]\]/g, '<mark>[$1]
 
 export default function LegalPage({ label, title, updated, html, draft = true }: { label: string; title: string; updated?: string; html: string; draft?: boolean }) {
   return (
-    <main className="page lw">
+    <main id="content" className="page lw">
       <div className="k">{label}</div>
       <h1>{title}<b>.</b></h1>
       {updated && <p className="lead">Last updated: {updated}</p>}
