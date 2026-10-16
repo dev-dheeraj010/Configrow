@@ -42,7 +42,7 @@ test('mobile menu: opens, traps focus, Escape closes, scroll locked', async ({ p
 test('footer has four columns and the legal row', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/faq');
-  await expect(page.locator('footer h4')).toHaveText(['MENU', 'CONNECT', 'CONTACT']);
+  await expect(page.locator('footer h3')).toHaveText(['MENU', 'CONNECT', 'CONTACT']);
   await expect(page.locator('footer')).toContainText('© 2026 CONFIGROW — ALL RIGHTS RESERVED');
   await page.locator('footer').scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'shots/m1/1440x900-footer.png' });

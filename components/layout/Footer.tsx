@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="fg">
         <div><p>Premium websites that turn visitors into leads.</p></div>
         <div>
-          <h4>MENU</h4>
+          <h3>MENU</h3>
           <ul>
             <li><Link href="/#services">Services</Link></li>
             <li><Link href="/#promise">Promise</Link></li>
@@ -18,11 +18,11 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <h4>CONNECT</h4>
+          <h3>CONNECT</h3>
           <SocialIcons />
         </div>
         <div>
-          <h4>CONTACT</h4>
+          <h3>CONTACT</h3>
           <ul>
             <li><a href="mailto:info@configrow.in">info@configrow.in</a></li>
             <li><a href="tel:+919480933776">+91 94809 33776</a></li>
