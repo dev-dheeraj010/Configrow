@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.env*.local
+next-env.d.ts
+*.tsbuildinfo
+.claude/settings.local.json
+test-results
+playwright-report
+shots

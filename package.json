@@ -1,0 +1,29 @@
+{
+  "name": "configrow-site",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.15.19",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.13",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.152.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/three": "^0.152.1",
+    "typescript": "^5"
+  }
+}

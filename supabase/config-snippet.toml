@@ -1,0 +1,5 @@
+# Add this block to supabase/config.toml (created by `supabase init`).
+# The public website form calls this function without a login, so the JWT check is off;
+# the function protects itself with validation, a honeypot field and a per-visitor rate limit.
+[functions.submit-enquiry]
+verify_jwt = false

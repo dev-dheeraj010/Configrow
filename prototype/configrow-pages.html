@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Configrow</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=JetBrains+Mono&display=swap">
+<style>
+:root{--bg:#00091b;--tx:#f2f5fb;--mu:rgba(242,245,251,.68);--hi:rgba(242,245,251,.5);--ln:rgba(242,245,251,.14);--ac:#0652dd}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3ff;--tx:#00091b;--mu:rgba(0,9,27,.7);--hi:rgba(0,9,27,.55);--ln:rgba(0,9,27,.16)}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;background-image:radial-gradient(900px 500px at 80% -5%,rgba(6,82,221,.12),transparent 65%);background-repeat:no-repeat}
+a{color:inherit;text-decoration:none}[hidden]{display:none!important}
+header{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:0;right:0;margin:0 auto;z-index:5;width:min(1240px,calc(100% - 32px));display:flex;justify-content:space-between;align-items:center;height:60px;padding:0 12px 0 20px;border:1px solid var(--ln);border-radius:20px;background:color-mix(in srgb,var(--bg) 62%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font:12px 'JetBrains Mono',monospace;letter-spacing:.1em}
+header svg{height:26px;width:auto;display:block}nav{display:flex;gap:6px}nav a{display:inline-flex;align-items:center;height:38px;padding:0 14px;opacity:.62}nav a:hover,nav a.on{opacity:1}
+.w{max-width:820px;margin:0 auto;padding:140px 24px 70px;animation:in .5s both}@keyframes in{from{opacity:0;transform:translateY(16px)}}
+.k{font:11px 'JetBrains Mono',monospace;letter-spacing:.18em;color:var(--hi)}
+h1{margin:18px 0 0;font-size:clamp(34px,5.4vw,68px);font-weight:700;letter-spacing:-.04em;line-height:.98;text-transform:uppercase}h1 b{color:var(--ac)}
+.lead{margin:20px 0 0;font-weight:300;font-size:18px;line-height:1.6;color:var(--mu)}
+details{border-top:1px solid var(--ln)}details:last-of-type{border-bottom:1px solid var(--ln)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;padding:22px 0;font-weight:500;font-size:clamp(16px,1.6vw,19px)}summary::-webkit-details-marker{display:none}
+summary::after{content:'+';font:300 26px/1 Inter;color:var(--hi)}details[open] summary::after{content:'−'}
+details p,article p,article li{font-weight:300;line-height:1.7;color:var(--mu);font-size:16px}details p{margin:0 0 22px;max-width:680px}
+article{counter-reset:s;margin-top:36px}article h3{counter-increment:s;margin:34px 0 8px;font-size:19px;font-weight:500}article h3::before{content:counter(s) '. ';color:var(--hi)}
+article p{margin:8px 0}article ul{margin:8px 0;padding-left:22px}a.ul,article a{text-decoration:underline;text-underline-offset:3px;color:var(--tx)}
+mark{background:rgba(255,196,60,.16);color:#ffcf66;border-radius:4px;padding:0 4px}
+.dr{margin-top:26px;padding:12px 16px;border:1px dashed rgba(255,196,60,.5);border-radius:12px;font:11px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#ffcf66}
+.nf{min-height:calc(100vh - 220px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.big{position:relative;z-index:1;font-size:clamp(110px,24vw,280px);font-weight:700;letter-spacing:-.07em;line-height:.9;color:transparent;-webkit-text-stroke:1px var(--hi)}.big b{color:var(--ac);-webkit-text-stroke:0}
+.nf i{position:absolute;left:50%;top:42%;width:340px;height:340px;margin:-170px 0 0 -170px;border:1px solid var(--ln);border-radius:50%;animation:rg 5s ease-out infinite}.nf i:nth-child(2){animation-delay:1.7s}.nf i:nth-child(3){animation-delay:3.4s}
+@keyframes rg{from{transform:scale(.5);opacity:.9}to{transform:scale(2.6);opacity:0}}@media(prefers-reduced-motion:reduce){.nf i{animation:none;opacity:.4}.w{animation:none}}
+.nf h2{position:relative;z-index:1;margin:26px 0 0;font-size:clamp(24px,3.4vw,40px);letter-spacing:-.03em;text-transform:uppercase}.nf p{position:relative;z-index:1;margin:12px 0 0;color:var(--mu);font-weight:300}
+.bt{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:30px}
+.bt a{padding:14px 26px;border:1px solid rgba(242,245,251,.35);border-radius:999px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase}.bt a:first-child{background:#0053da;border-color:#0061ff;color:#f5f5f5}.bt a:hover{filter:brightness(1.2)}
+footer{border-top:1px solid var(--ln);padding:28px clamp(20px,6vw,96px) calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font:11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--hi)}footer a:hover{color:var(--tx)}
+@media(max-width:800px){nav{gap:0;font-size:11px}nav a{padding:0 9px}}
+</style>
+</head>
+<body>
+<header><a href="https://claude.ai/artifact/4ehbbfN5Zern69Q26J9RjM" id="lg" aria-label="Configrow home"></a><nav><a href="https://claude.ai/artifact/4ehbbfN5Zern69Q26J9RjM">HOME</a><a href="https://claude.ai/artifact/Xw9hQd7fr19cdW192rMsic">PRICING</a><a href="#/faq" data-n="faq">FAQ</a></nav></header>
+
+<main>
+<section class="w" data-r="faq">
+<div class="k">FAQ</div><h1>Questions, answered<b>.</b></h1><p class="lead">Everything local business owners usually ask before starting a website. Can't find yours? Call us.</p>
+<div style="margin-top:36px">
+<details><summary>Which plan should I choose?</summary><p>Standard is our recommended plan: improved UI/UX, extra pages and sections, enhanced SEO, enquiry features and a year of hosting included. Pick Foundation for a clean, essential online presence, or Next-gen for a fully custom 3D website with advanced SEO and integrations.</p></details>
+<details><summary>What is the difference between the three plans?</summary><p>Foundation (₹10,999 + hosting) covers the essentials: an SEO-friendly structure, responsive layout, essential pages and a contact form. Standard (₹14,549, including free hosting for 1 year) adds improved design, more pages, enhanced SEO and stronger performance. Next-gen (₹19,999, including free hosting for 1 year) is fully custom with advanced SEO, sophisticated features and integrations, and a scalable setup.</p></details>
+<details><summary>Is hosting included?</summary><p>Standard and Next-gen include free hosting for 1 year. Foundation is priced separately, plus hosting. What happens after the first year: [[add renewal terms]].</p></details>
+<details><summary>Will my website work on phones?</summary><p>Yes. Every plan includes a responsive, mobile-friendly layout. Standard is designed mobile-first and Next-gen delivers a high-performance responsive experience.</p></details>
+<details><summary>Will my website show up on Google?</summary><p>Every plan is built with SEO in mind: a basic SEO-friendly structure in Foundation, an enhanced setup in Standard and advanced integration in Next-gen. Search rankings depend on many things outside anyone's control, so we can't promise a particular position.</p></details>
+<details><summary>What technologies do you use?</summary><p>HTML, Next.js / Node.js and PHP, chosen to suit your project.</p></details>
+<details><summary>Do you build mobile apps?</summary><p>App development is coming soon. Get in touch if you'd like to hear when it's ready.</p></details>
+<details><summary>How long will my website take?</summary><p>[[add typical timelines for each plan]]</p></details>
+<details><summary>How do payments work?</summary><p>[[add advance and balance terms]]. Prices are in Indian rupees (₹). See our <a href="#/terms">Terms and Conditions</a> for details.</p></details>
+<details><summary>Can I upgrade my plan later?</summary><p>[[add upgrade policy]]</p></details>
+<details><summary>What do you need from me?</summary><p>Typically your business details, logo, photos and the content you'd like on the site. If you don't have some of these, tell us and we'll guide you.</p></details>
+<details><summary>How do I get started?</summary><p>Call <a href="tel:+919480933776">+91 94809 33776</a> or email <a href="mailto:info@configrow.in">info@configrow.in</a>. We'll talk through your business and recommend the right plan.</p></details>
+</div></section>
+
+<section class="w" data-r="privacy" hidden>
+<div class="k">LEGAL</div><h1>Privacy Policy<b>.</b></h1><p class="lead">Last updated: 11 October 2026</p><div class="dr">DRAFT TEMPLATE — HAVE A LEGAL ADVISOR REVIEW AND FILL THE HIGHLIGHTED GAPS BEFORE LAUNCH</div>
+<article>
+<h3>Who we are</h3><p>Configrow ("we", "us") builds websites for local businesses. This policy explains how we handle personal information when you visit www.configrow.in, contact us or use our services.</p>
+<h3>Information we collect</h3><ul><li>Details you give us: name, email, phone number and information about your business, when you use our enquiry form, email or call us.</li><li>Project material you share with us, such as logos, photos and content.</li><li>Basic technical data when you browse: device and browser type, approximate location from your IP address, and pages visited. [[confirm which analytics tools you use]]</li></ul>
+<h3>How we use it</h3><ul><li>To respond to enquiries and provide quotes.</li><li>To plan, build, host and support your website.</li><li>To send project updates and important notices.</li><li>To improve our website and services, and to keep them secure.</li><li>To meet legal and accounting obligations.</li></ul>
+<h3>Consent</h3><p>We process your personal data with your consent, or where the law allows, for example to perform a contract or comply with legal duties. You can withdraw consent at any time by contacting us; this does not affect past processing.</p>
+<h3>Sharing</h3><p>We do not sell your personal data. We share it only with trusted providers who help us deliver our services, such as hosting, database (Supabase), messaging (WhatsApp, provided by Meta), email and analytics providers, and with authorities when the law requires. Enquiries you send through our website form are stored in our database and forwarded to our team on WhatsApp so we can reply quickly. These providers may process data outside India.</p>
+<h3>Cookies</h3><p>We use cookies and similar technologies for essential site functions and, where applicable, analytics. You can control cookies in your browser settings. [[describe cookies you actually use]]</p>
+<h3>Retention</h3><p>We keep personal data only as long as needed for the purposes above or as the law requires, then delete or anonymise it. [[add retention periods]]</p>
+<h3>Security</h3><p>We use reasonable technical and organisational measures to protect your data. No online service is completely secure, so we cannot guarantee absolute security.</p>
+<h3>Your rights</h3><p>Under applicable Indian law, including the Digital Personal Data Protection Act, 2023, you may ask to access, correct or erase your personal data, withdraw consent, and raise a grievance. Write to us using the details below.</p>
+<h3>Children</h3><p>Our services are for businesses and are not directed at children under 18. We do not knowingly collect their personal data.</p>
+<h3>Third-party links</h3><p>Our website may link to other sites. We are not responsible for their privacy practices.</p>
+<h3>Changes</h3><p>We may update this policy from time to time. The latest version will always be on this page with its date.</p>
+<h3>Contact and grievances</h3><p>Email <a href="mailto:info@configrow.in">info@configrow.in</a> or call <a href="tel:+919480933776">+91 94809 33776</a>. Grievance contact: [[name of grievance officer]]. Registered address: [[address]].</p>
+</article></section>
+
+<section class="w" data-r="terms" hidden>
+<div class="k">LEGAL</div><h1>Terms and Conditions<b>.</b></h1><p class="lead">Last updated: 11 October 2026</p><div class="dr">DRAFT TEMPLATE — HAVE A LEGAL ADVISOR REVIEW AND FILL THE HIGHLIGHTED GAPS BEFORE LAUNCH</div>
+<article>
+<h3>Acceptance</h3><p>By using www.configrow.in or engaging Configrow ("we", "us"), you ("the client") agree to these terms. If you do not agree, please do not use our website or services.</p>
+<h3>Our services</h3><p>We design and develop websites using technologies such as HTML, Next.js / Node.js and PHP, offered as the Foundation, Standard and Next-gen plans. What each plan includes is described on our Pricing page and in any written quote we issue. Anything outside that scope is quoted separately.</p>
+<h3>Pricing</h3><p>Prices are in Indian rupees (₹), currently: Foundation ₹10,999 plus hosting; Standard ₹14,549 including free hosting for 1 year; Next-gen ₹19,999 including free hosting for 1 year. [[state whether GST and other taxes are extra]] We may change prices for new projects; a confirmed quote stays valid for [[quote validity period]].</p>
+<h3>Payments</h3><p>[[add advance percentage, balance due date and accepted payment methods]]. Work on a stage may be paused if a payment is overdue.</p>
+<h3>Client responsibilities</h3><p>You agree to give us accurate information, content and approvals on time. Delays on your side may move the delivery schedule. You confirm that you own, or have permission to use, everything you provide to us.</p>
+<h3>Revisions and changes</h3><p>Each plan includes [[number]] rounds of revisions within the agreed scope. Changes beyond the agreed scope are treated as new work and quoted separately.</p>
+<h3>Hosting and domains</h3><p>Standard and Next-gen include free hosting for 1 year from [[go-live or purchase date]]. After that, hosting is renewed at [[renewal price]] unless you choose another provider. Domain registration is [[included / charged separately]]. Third-party services and licences may carry their own costs and terms.</p>
+<h3>Intellectual property</h3><p>Once the full amount is paid, you own the final design and content delivered to you. We keep our pre-existing tools, code libraries and know-how, and third-party materials stay under their own licences. Unless you tell us otherwise in writing, we may show the finished project in our portfolio.</p>
+<h3>Support and maintenance</h3><p>Support after launch is limited to what your plan or written agreement states. [[describe support period and what it covers]]</p>
+<h3>Cancellation and refunds</h3><p>[[add cancellation and refund policy, for example what is refundable before work begins and after each stage]]</p>
+<h3>No guarantee of results</h3><p>We build websites designed to attract and convert visitors, but we do not guarantee search rankings, traffic, leads or sales, because these depend on many factors outside our control.</p>
+<h3>Limitation of liability</h3><p>To the extent permitted by law, we are not liable for indirect or consequential losses, lost profits or data loss. Our total liability for any claim is limited to the amount you paid us for the project in question.</p>
+<h3>Confidentiality</h3><p>Each party will keep the other's non-public business information confidential and use it only for the project.</p>
+<h3>Termination</h3><p>Either party may end the engagement by written notice if the other materially breaches these terms and does not fix the problem within [[number]] days. Amounts due for work already completed remain payable.</p>
+<h3>Governing law</h3><p>These terms are governed by the laws of India. Courts at [[city]] have exclusive jurisdiction, subject to any dispute resolution process we agree in writing.</p>
+<h3>Changes to these terms</h3><p>We may update these terms from time to time. The version on this page, with its date, applies to new engagements.</p>
+<h3>Contact</h3><p>Email <a href="mailto:info@configrow.in">info@configrow.in</a> or call <a href="tel:+919480933776">+91 94809 33776</a>. See also our <a href="#/privacy">Privacy Policy</a>.</p>
+</article></section>
+
+<section class="w nf" data-r="404" hidden><i></i><i></i><i></i>
+<div class="k" style="position:relative;z-index:1">PAGE NOT FOUND</div><div class="big">4<b>0</b>4</div><h2>This page took a wrong turn<b style="color:var(--ac)">.</b></h2><p>The page you're looking for doesn't exist or has moved.</p>
+<div class="bt"><a href="https://claude.ai/artifact/4ehbbfN5Zern69Q26J9RjM">Back to home</a><a href="https://claude.ai/artifact/Xw9hQd7fr19cdW192rMsic">See pricing</a><a href="#/faq">Read the FAQ</a></div></section>
+</main>
+
+<footer><span>© 2026 CONFIGROW — ALL RIGHTS RESERVED</span><span><a href="https://claude.ai/artifact/4ehbbfN5Zern69Q26J9RjM">HOME</a> · <a href="https://claude.ai/artifact/Xw9hQd7fr19cdW192rMsic">PRICING</a> · <a href="#/faq">FAQ</a> · <a href="#/privacy">PRIVACY POLICY</a> · <a href="#/terms">TERMS AND CONDITIONS</a></span></footer>
+<script>
+var MK=[[[[0.0319,-0.0942],[0.0502,-0.114],[0.0805,-0.1353],[0.1064,-0.1474],[0.1565,-0.1581],[0.2052,-0.155],[0.2538,-0.1368],[0.2766,-0.1216],[0.2994,-0.0988],[0.3161,-0.0745],[0.3207,-0.0745],[0.3663,-0.1261],[0.3663,0.0623],[0.2052,0.0638],[0.1565,-0.0],[0.2888,-0.0015],[0.2872,-0.0091],[0.2675,-0.0441],[0.2416,-0.0699],[0.2158,-0.0851],[0.1976,-0.0912],[0.1748,-0.0942],[0.1322,-0.0881],[0.0988,-0.0714],[0.0714,-0.0471]]],[[[-0.3617,-0.0122],[-0.3404,-0.0608],[-0.3191,-0.0897],[-0.2979,-0.1109],[-0.2629,-0.1353],[-0.2219,-0.152],[-0.1884,-0.1581],[-0.1611,-0.1581],[-0.1201,-0.1505],[-0.0927,-0.1398],[-0.0623,-0.1216],[-0.0258,-0.0866],[-0.0137,-0.0699],[0.0167,-0.0076],[0.035,0.0638],[0.0486,0.1003],[0.0623,0.1231],[0.0897,0.152],[0.1094,0.1657],[0.1353,0.1763],[0.1565,0.1809],[0.1884,0.1809],[0.2188,0.1733],[0.2401,0.1626],[0.2751,0.1337],[0.31,0.1793],[0.3116,0.1854],[0.266,0.2219],[0.2371,0.2356],[0.2036,0.2447],[0.1398,0.2447],[0.1109,0.2371],[0.0836,0.2249],[0.0395,0.193],[0.0167,0.1672],[0.0015,0.1444],[-0.0243,0.0836],[-0.041,0.0122],[-0.0517,-0.0137],[-0.0729,-0.0456],[-0.0988,-0.0699],[-0.1261,-0.0851],[-0.1657,-0.0942],[-0.1945,-0.0927],[-0.2249,-0.0836],[-0.2553,-0.0653],[-0.2766,-0.0441],[-0.2964,-0.0122],[-0.307,0.0258],[-0.307,0.0608],[-0.3024,0.0836],[-0.2888,0.1155],[-0.2751,0.1353],[-0.2492,0.1596],[-0.2264,0.1733],[-0.1884,0.1839],[-0.1581,0.1839],[-0.1307,0.1778],[-0.1109,0.1687],[-0.0836,0.1474],[-0.0471,0.1991],[-0.0805,0.2249],[-0.1064,0.2371],[-0.1322,0.2447],[-0.1717,0.2492],[-0.2052,0.2462],[-0.2295,0.2401],[-0.2644,0.2249],[-0.3024,0.1976],[-0.3237,0.1748],[-0.3465,0.1398],[-0.3617,0.1018],[-0.3678,0.0714],[-0.3693,0.0334]]]],d='';MK.forEach(function(g){g.forEach(function(q){d+='M'+q.map(function(a){return(a[0]*100).toFixed(1)+' '+(-a[1]*100).toFixed(1)}).join('L')+'Z'})});
+document.getElementById('lg').innerHTML='<svg viewBox="-38 -26 76 43"><defs><linearGradient id="gg"><stop offset=".1" stop-color="#66779c"/><stop offset=".6" stop-color="#0a5cff"/></linearGradient></defs><path d="'+d+'" fill="url(#gg)" fill-rule="evenodd"/></svg>';
+/* highlight the gaps to fill: [[like this]] */
+[].forEach.call(document.querySelectorAll('article,details'),function(e){e.innerHTML=e.innerHTML.replace(/\[\[(.*?)\]\]/g,'<mark>[$1]</mark>')});
+/* tiny hash router: unknown routes show the 404 page */
+var V={faq:'FAQ',privacy:'Privacy Policy',terms:'Terms and Conditions','404':'Page not found'};
+function go(){var h=(location.hash.replace(/^#\/?/,'')||'faq').toLowerCase();if(!(h in V))h='404';
+[].forEach.call(document.querySelectorAll('[data-r]'),function(s){s.hidden=s.getAttribute('data-r')!==h;if(!s.hidden){s.style.animation='none';void s.offsetWidth;s.style.animation=''}});
+[].forEach.call(document.querySelectorAll('nav a[data-n]'),function(a){a.classList.toggle('on',a.getAttribute('data-n')===h)});
+document.title=V[h]+' — Configrow';scrollTo(0,0)}
+addEventListener('hashchange',go);go();
+</script>
+</body>
+</html>
