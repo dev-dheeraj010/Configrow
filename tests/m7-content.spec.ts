@@ -21,13 +21,15 @@ test('FAQ answers use the supplied wording', async ({ page }) => {
   await page.goto('/faq');
   const ans = (q: string) => page.locator('details', { hasText: q });
   await expect(ans('Is hosting included?')).toContainText('completely free of cost for 1 year (365 days)');
+  await expect(ans('Is hosting included?')).toContainText('purchased externally');
+  await expect(ans('Is hosting included?')).toContainText('renewal plan');
   await expect(ans('How long will my website take?')).toContainText('Foundation: 7–10 business days');
   await expect(ans('How long will my website take?')).toContainText('Next-gen: 15–20 business days');
-  await expect(ans('How do payments work?')).toContainText('40% advance');
+  await expect(ans('How do payments work?')).toContainText('40% advance'); await expect(ans('How do payments work?')).toContainText('remaining 60%');
   await expect(ans('Can I upgrade my plan later?')).toContainText('no upgrade policy');
   await expect(ans('How do I get started?')).toContainText('+91 78923 17834');
   expect(await page.locator('main [class*="[["]').count()).toBe(0);
-  expect(await page.locator('mark').count()).toBe(0); // no unfilled gaps left on the FAQ
+  expect(await page.locator('mark').count()).toBe(1); // the one open gap: hosting renewal terms
 });
 
 test('terms and privacy are separate pages with the supplied text', async ({ page }) => {
