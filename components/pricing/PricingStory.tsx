@@ -7,9 +7,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MARK } from '@/lib/markData';
 import { PLANS } from '@/lib/plans';
 import { lenisControl } from '@/components/layout/SmoothScroll';
+import { X0, L, PRICE_AT, ZOOM_AT, finaleStart, storyLength, stageHeightVh } from '@/lib/story';
+import { prefersReducedMotion } from '@/lib/scroll';
 
 const W = 3.2, RR = 0.5, VH = 2 * 8 * Math.tan((25 * Math.PI) / 180);
-const T = 12.8, X0 = 0.3, L = 3.7;          // timeline length / start offset / length of one plan block (units of 100vh)
+const T = storyLength(PLANS.length);       // timeline length in units of 100vh (see lib/story.ts for the per-plan map)
 const GL = [0.15, 0.5, 1];                  // glow per plan: the object gets richer from plan to plan
 const inr = (n: number) => Math.round(n).toLocaleString('en-IN');
 
@@ -34,6 +36,7 @@ export default function PricingStory() {
     gsap.registerPlugin(ScrollTrigger);
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; // always start the story from the top
     window.scrollTo(0, 0);
+    if (prefersReducedMotion()) return; // static plan cards only (see the reduced-motion rules in globals.css)
     const el = root.current!;
     const q = (s: string) => el.querySelector(s) as HTMLElement;
     const tr = q('#track');
@@ -102,6 +105,7 @@ export default function PricingStory() {
       O = [mk(1, 0), mk(3, 1), mk(1, 2)];
 
       let Wu = 1, off = [0, 0];
+      const nar = () => window.innerWidth <= 800;
       onResize = () => {
         const w = window.innerWidth, h = window.innerHeight, nar = w <= 800;
         R!.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
@@ -114,8 +118,8 @@ export default function PricingStory() {
         tr.style.transform = `scale(${1 / S.zoom}) translateX(${-S.pan * 100}vw)`; tr.style.opacity = String(S.pa);
         O.forEach((o: any, i: number) => {
           const b = o.build, g = o.glow, v = o.vis;
-          o.g.position.set(i * Wu + off[0], off[1], 0);
-          o.g.scale.setScalar(0.85 * (0.6 + 0.4 * b));
+          o.g.position.set((nar() ? 0 : i * Wu) + off[0], off[1], 0);
+          o.g.scale.setScalar((nar() ? 0.6 : 0.85) * (0.6 + 0.4 * b));
           o.g.rotation.set(0.1, (1 - b) * -1.2 + Math.sin(t * 0.6 + i) * 0.22, 0);
           o.ms.forEach((m: any, k: number) => { m.opacity = v * b * (1 - k * 0.18); m.emissiveIntensity = g * 0.08; });
           o.mM.opacity = v * b; o.rimM.opacity = v * b; o.mM.emissiveIntensity = g * 0.9;
@@ -133,31 +137,55 @@ export default function PricingStory() {
     }
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: el, start: 'top top', end: 'bottom bottom', scrub: 1 } });
-      tl.to(q('#intro'), { opacity: 0, y: -30, duration: 0.3 }, 0);
-      PLANS.forEach((p, i) => {
-        const b = X0 + i * L, pn = tr.children[i] as HTMLElement;
-        const cap = pn.querySelector('.cap'), rec = pn.querySelector('.rec');
-        const lis = Array.from(pn.querySelectorAll('li')), num = pn.querySelector('.num') as HTMLElement, n = lis.length, cnt = { v: 0 };
-        tl.fromTo(rec ? [cap, rec] : cap, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3 }, b);                 // 1. plan name
-        tl.to(O[i], { build: 1, duration: 0.55 }, b).to(O[i], { glow: GL[i], duration: 1.6 }, b + 0.5);                    //    the 3D object builds
-        lis.forEach((li, k) => tl.fromTo(li, { opacity: 0, x: -40, filter: 'blur(8px)', clipPath: 'inset(0 100% 0 0)' },  // 2. features, one per scroll step
-          { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: 0.24 }, b + 0.45 + k * (1.5 / n)));
-        tl.fromTo(pn.querySelector('.pr'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.25 }, b + 2);          // 3. price counts up, then stays on screen
-        tl.to(cnt, { v: p.p, duration: 0.5, onUpdate: () => { num.textContent = inr(cnt.v); } }, b + 2);
-        tl.fromTo(pn.querySelector('.ho'), { opacity: 0 }, { opacity: 1, duration: 0.2 }, b + 2.4);
-        if (i < 2) tl.to(S, { zoom: 1.7, duration: 0.25 }, b + 3.2).to(S, { pan: i + 1, duration: 0.5 }, b + 3.2).to(S, { zoom: 1, duration: 0.25 }, b + 3.45); // 4. zoom out, move left, next plan
-      });
-      const F = X0 + 2 * L + 3.2;                                                                                          // finale
-      tl.to(S, { zoom: 2.4, duration: 0.6 }, F).to(S, { pan: 1, duration: 0.6 }, F);
-      tl.to(S, { zoom: 1, duration: 0.7 }, F + 0.7).to(S, { pan: 0, duration: 0.7 }, F + 0.7).to(S, { pa: 0, duration: 0.4 }, F + 0.7);
-      O.forEach((o) => tl.to(o, { vis: 0, duration: 0.5 }, F + 0.6));
-      tl.fromTo('.fc', { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.1 }, F + 1);
-      tl.fromTo('.cl', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }, F + 1.4);
-      tl.to({}, { duration: 0.1 }, T - 0.1);
+      const F = finaleStart(PLANS.length);
       const rail = Array.from(el.querySelectorAll('#rail span'));
+      const mm = gsap.matchMedia();
+
+      /**
+       * Scroll map of #stage (top top -> bottom bottom). Timeline time is in units of 100vh, 1:1 with scroll distance;
+       * the stage height comes from the same numbers (lib/story.ts), and nothing else in this file repeats them.
+       *   0 - 0.3                 intro "Three plans. One standard." fades out
+       *   b = X0 + i*L  (plan i)  name + 3D build (b), features one per step (b+.45 ... b+1.95), price counts up (b+PRICE_AT)
+       *                           and stays on screen until b+ZOOM_AT; desktop then zooms 1.7x, pans left and returns to 1x by b+L.
+       *   F = finaleStart         pull back to 2.4x, 3D objects fade, three tall plan cards, "Your answer is just a ring away"
+       *   F + FINALE_TAIL = T     end (padded so timeline length === T)
+       * Phones (<= 800px): no horizontal camera moves; each plan fades in place and out again.
+       */
+      const build = (phone: boolean) => {
+        const tl = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: el, start: 'top top', end: 'bottom bottom', scrub: 1, invalidateOnRefresh: true } });
+        tl.to(q('#intro'), { opacity: 0, y: -30, duration: 0.3 }, 0);
+        PLANS.forEach((p, i) => {
+          const b = X0 + i * L, pn = tr.children[i] as HTMLElement;
+          const cap = pn.querySelector('.cap'), rec = pn.querySelector('.rec');
+          const lis = Array.from(pn.querySelectorAll('li')), num = pn.querySelector('.num') as HTMLElement, n = lis.length, cnt = { v: 0 };
+          num.textContent = '0'; // server HTML carries the real price (for crawlers and no-JS); the count-up starts from 0
+          if (phone) tl.fromTo(pn, { opacity: 0 }, { opacity: 1, duration: 0.3 }, b);
+          tl.fromTo(rec ? [cap, rec] : cap, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3 }, b);                   // 1. plan name
+          if (phone && i > 0) tl.fromTo(O[i], { vis: 0 }, { vis: 1, duration: 0.4 }, b);
+          tl.to(O[i], { build: 1, duration: 0.55 }, b).to(O[i], { glow: GL[i], duration: 1.6 }, b + 0.5);                      //    the 3D object builds
+          lis.forEach((li, k) => tl.fromTo(li, { opacity: 0, x: -40, filter: 'blur(8px)', clipPath: 'inset(0 100% 0 0)' },    // 2. features, one per scroll step
+            { opacity: 1, x: 0, filter: 'blur(0px)', clipPath: 'inset(0 0% 0 0)', duration: 0.24 }, b + 0.45 + k * (1.5 / n)));
+          tl.fromTo(pn.querySelector('.pr'), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.25 }, b + PRICE_AT);       // 3. price counts up, then stays on screen
+          tl.to(cnt, { v: p.p, duration: 0.5, onUpdate: () => { num.textContent = inr(cnt.v); } }, b + PRICE_AT);
+          tl.fromTo(pn.querySelector('.ho'), { opacity: 0 }, { opacity: 1, duration: 0.2 }, b + PRICE_AT + 0.4);
+          if (i < PLANS.length - 1) {                                                                                           // 4. hand over to the next plan
+            if (phone) { tl.to(pn, { opacity: 0, duration: 0.4 }, b + ZOOM_AT).to(O[i], { vis: 0, duration: 0.4 }, b + ZOOM_AT); }
+            else tl.to(S, { zoom: 1.7, duration: 0.25 }, b + ZOOM_AT).to(S, { pan: i + 1, duration: 0.5 }, b + ZOOM_AT).to(S, { zoom: 1, duration: 0.25 }, b + ZOOM_AT + 0.25);
+          }
+        });
+        if (phone) tl.to(tr.children[PLANS.length - 1], { opacity: 0, duration: 0.4 }, F);
+        else { tl.to(S, { zoom: 2.4, duration: 0.6 }, F).to(S, { pan: 1, duration: 0.6 }, F); tl.to(S, { zoom: 1, duration: 0.7 }, F + 0.7).to(S, { pan: 0, duration: 0.7 }, F + 0.7); }
+        tl.to(S, { pa: 0, duration: 0.4 }, F + 0.7);
+        O.forEach((o) => tl.to(o, { vis: 0, duration: 0.5 }, F + 0.6));
+        tl.fromTo('.fc', { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.1 }, F + 1);
+        tl.fromTo('.cl', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }, F + 1.4);
+        tl.set({}, {}, T);                                                                                                      // pad: timeline length === T
+      };
+      mm.add('(min-width: 801px)', () => build(false));
+      mm.add('(max-width: 800px)', () => build(true));
+
       ScrollTrigger.create({ trigger: el, start: 'top top', end: 'bottom bottom', onUpdate: (t) => {
-        const u = t.progress * T, ix = u < F ? Math.max(0, Math.min(2, Math.floor((u - X0) / L))) : -1;
+        const u = t.progress * T, ix = u < F ? Math.max(0, Math.min(PLANS.length - 1, Math.floor((u - X0) / L))) : -1;
         rail.forEach((e, i) => e.classList.toggle('on', i === ix));
       } });
     }, el);
@@ -174,7 +202,7 @@ export default function PricingStory() {
   const skip = () => { const el = root.current!; lenisControl.scrollTo(el.offsetTop + el.offsetHeight - window.innerHeight); };
 
   return (
-    <div id="stage" ref={root}>
+    <div id="stage" ref={root} style={{ height: `${stageHeightVh(PLANS.length)}vh` }}>
       <div className="pin">
         <canvas className="pgl" ref={cv} aria-hidden="true" />
         <div id="intro"><div className="k">PRICING</div><h1>Three plans<b>.</b><br />One standard<b>.</b></h1><p>SCROLL TO EXPLORE ↓</p></div>
@@ -187,7 +215,7 @@ export default function PricingStory() {
                   {p.rec && <div className="rec">RECOMMENDED</div>}
                   <div className={'cap' + (p.rec ? ' rc' : '')}>{p.n}</div>
                   <ul className="ft">{p.f.map((x) => <li key={x}><b>✓</b>{x}</li>)}</ul>
-                  <div className="pr"><span className="rs">₹</span><span className="num">0</span><small className="ho">{p.h}</small></div>
+                  <div className="pr"><span className="rs">₹</span><span className="num">{inr(p.p)}</span><small className="ho">{p.h}</small></div>
                 </div>
               </section>
             ))}
