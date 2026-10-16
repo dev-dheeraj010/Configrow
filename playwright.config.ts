@@ -6,5 +6,5 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   use: { colorScheme: 'dark', baseURL: 'http://localhost:3100', headless: true, launchOptions: { args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] } },
-  webServer: { command: 'npx next start -p 3100', port: 3100, reuseExistingServer: true, timeout: 60_000 },
+  webServer: { command: 'node scripts/with-dist.mjs next start -p 3100', port: 3100, reuseExistingServer: false, timeout: 60_000 },
 });
