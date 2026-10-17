@@ -7,7 +7,7 @@ Configrow is a web development agency for local businesses. It sells premium, SE
 - Founders: Praadhyun Sai H (Marketing and Sales), Dheeraj Murthy (Development). Do not put founder names on the site unless asked.
 
 ## Stack (fixed)
-Next.js 14 App Router · React 18 · TypeScript (strict) · Three.js via React Three Fiber (home) · GSAP + ScrollTrigger · Lenis · plain CSS in app/globals.css with CSS variables (no Tailwind) · Supabase (Postgres + Edge Function) · WhatsApp Cloud API · deploy on Vercel.
+Next.js 15 App Router · React 19 · TypeScript (strict) · Three.js via React Three Fiber (home) · GSAP + ScrollTrigger · Lenis · plain CSS in app/globals.css with CSS variables (no Tailwind) · Supabase (Postgres + Edge Function) · WhatsApp Cloud API · Cloudflare Turnstile · Google Analytics 4 (consent-gated) · host on Hostinger Node.js Web App (GitHub deploy, `npm run build` / `npm start`).
 
 ## Design system
 - Colours: background **#00091b** (dominant), text #f2f5fb, muted rgba(242,245,251,.6), hairlines rgba(242,245,251,.14). Accent **#0652dd used sparingly**: full stops on headlines, the logo mark, the top progress line, CTAs. Provide a light-theme variant via prefers-color-scheme.
@@ -58,6 +58,11 @@ Story (timeline units of 100vh): intro "Three plans. One standard." fades out fi
 - Edge Function submit-enquiry (verify_jwt off): validate, honeypot field `website`, max 5 per hour per hashed IP, insert with the service role, then notify in the background. Never fail the user if WhatsApp fails.
 - WhatsApp Cloud API template new_enquiry (Utility, en): "New Configrow enquiry from {{1}}. Phone: {{2}}. Email: {{3}}. About their business: {{4}}. Received: {{5}}", sent to **919480933776** and **917892317834**; optional email copy to info@configrow.in via Resend.
 - Form fields: Name (required), Phone / WhatsApp (required), Email (optional), About your business. States: sending, sent ("Thanks! We've got your enquiry and will call or WhatsApp you shortly."), error (fallback to phone/email).
+
+## Security and privacy rules
+- See SECURITY.md. Keep `npm audit --omit=dev` at zero high/critical; headers/CSP live in next.config.mjs and are tested (tests/m9-security.spec.ts).
+- Nothing optional loads before cookie consent (lib/consent.ts). Never enter, print or ask for tokens/keys in chat; secrets go through `npx supabase secrets set` or hPanel.
+- Tests build into `.next-test` (`npm test`); never run `npm run build` while `npm run dev` is running.
 
 ## Engineering quality bar
 - TypeScript strict, no any outside the Three.js glue. `npm run build` and `tsc --noEmit` must pass.

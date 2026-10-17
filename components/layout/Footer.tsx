@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import SocialIcons from './SocialIcons';
+import CookieSettingsButton from './CookieSettingsButton';
 
 export default function Footer() {
   return (
@@ -34,7 +35,7 @@ export default function Footer() {
       <div className="fb">
         <span className="wm">CONFIGROW</span>
         <span>© 2026 CONFIGROW — ALL RIGHTS RESERVED</span>
-        <span><Link href="/faq">FAQ</Link> · <Link href="/privacy">PRIVACY POLICY</Link> · <Link href="/terms">TERMS AND CONDITIONS</Link></span>
+        <span><Link href="/faq">FAQ</Link> · <Link href="/privacy">PRIVACY POLICY</Link> · <Link href="/terms">TERMS AND CONDITIONS</Link> · <CookieSettingsButton /></span>
       </div>
     </footer>
   );

@@ -174,3 +174,15 @@ input:focus-visible,textarea:focus-visible{outline:0;border-bottom-color:var(--t
 .soc{display:flex;gap:12px;list-style:none;margin:0;padding:0}
 .soc a{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--ln);border-radius:14px;color:var(--ico);transition:border-color .2s,color .2s,background .2s}
 .soc a:hover{border-color:var(--ico);background:color-mix(in srgb,var(--ico) 10%,transparent)}
+
+/* ---------- cookie banner, footer cookie button, Turnstile ---------- */
+.cc{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;width:min(540px,calc(100% - 32px));padding:20px 22px;border:1px solid var(--ln);border-radius:20px;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.cc-t{margin:0 0 8px;font:11px var(--font-mono),monospace;letter-spacing:.18em;text-transform:none;font-weight:400;color:var(--hi);line-height:1.2}
+.cc-d{margin:0;font-size:14px;line-height:1.55;color:var(--mu);max-width:none}.cc-d strong{color:var(--tx);font-weight:500}
+.cc-b{display:flex;gap:10px;margin-top:16px}
+.cc-b button{flex:1;padding:12px 16px;border:1px solid rgba(242,245,251,.35);border-radius:999px;background:transparent;color:var(--tx);font:500 12px var(--font-mono),monospace;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.cc-b button:hover{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]) .cc-b button{border-color:rgba(0,9,27,.4)}}
+@media(max-width:480px){.cc-b{flex-direction:column}}
+footer .fl{padding:0;margin:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer}footer .fl:hover{color:var(--tx)}
+.ts{margin-top:22px;min-height:65px}

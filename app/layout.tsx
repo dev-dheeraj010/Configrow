@@ -5,6 +5,8 @@ import SmoothScroll from '@/components/layout/SmoothScroll';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ProgressBar from '@/components/layout/ProgressBar';
+import CookieConsent from '@/components/layout/CookieConsent';
+import Analytics from '@/components/layout/Analytics';
 import { BRAND, DEFAULT_DESCRIPTION, JsonLd, PHONES, SITE, SOCIALS } from '@/lib/seo';
 
 const inter = Inter({ subsets: ['latin'], weight: ['300', '500', '700'], variable: '--font-inter' });
@@ -47,6 +49,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         {children}
         <Footer />
+        <CookieConsent />
+        <Analytics />
       </body>
     </html>
   );

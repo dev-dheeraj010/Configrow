@@ -1,31 +1,88 @@
 // Receives the website enquiry form, stores it in Postgres, then notifies the team on WhatsApp (and optionally email).
+//
+// Abuse protection, in the order a request meets it:
+//   method / origin / content-type / body size  ->  honeypot  ->  Turnstile (if configured)  ->  validation
+//   ->  duplicate check  ->  per-visitor rate limit  ->  insert  ->  WhatsApp (skipped, not failed, when the hourly cap is hit)
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const sb = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
-const ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '*').split(',').map((s) => s.trim()).filter(Boolean);
-const WA_TO = (Deno.env.get('WHATSAPP_TO') ?? '919480933776,917892317834').split(',').map((s) => s.replace(/\D/g, '')).filter(Boolean); // e.g. 919480933776,917892317834
+const ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? 'https://www.configrow.in,https://configrow.in').split(',').map((s) => s.trim()).filter(Boolean);
+const WA_TO = (Deno.env.get('WHATSAPP_TO') ?? '919480933776,917892317834').split(',').map((s) => s.replace(/\D/g, '')).filter(Boolean);
 const GRAPH = 'https://graph.facebook.com/v21.0';
-const MAX_PER_HOUR = 5;
+const TURNSTILE_SECRET = Deno.env.get('TURNSTILE_SECRET_KEY'); // when set, every submission must carry a valid Turnstile token
+
+const MAX_PER_HOUR_PER_VISITOR = 5;   // stored enquiries per hashed IP per hour
+const MAX_WHATSAPPS_PER_HOUR = 40;    // all visitors together: beyond this we still SAVE the enquiry but stop paying for messages
+const DUPLICATE_WINDOW_MS = 10 * 60_000;
+const MAX_BODY_BYTES = 16 * 1024;
 
 function cors(origin: string) {
-  const any = ORIGINS.includes('*');
   return {
-    'Access-Control-Allow-Origin': any ? '*' : ORIGINS.includes(origin) ? origin : ORIGINS[0] ?? '',
-    'Access-Control-Allow-Headers': 'content-type, authorization, apikey',
+    'Access-Control-Allow-Origin': ORIGINS.includes(origin) ? origin : ORIGINS[0] ?? '',
+    'Access-Control-Allow-Headers': 'content-type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
 }
 const reply = (body: unknown, status: number, h: Record<string, string>) =>
-  new Response(JSON.stringify(body), { status, headers: { ...h, 'Content-Type': 'application/json' } });
+  new Response(JSON.stringify(body), { status, headers: { ...h, 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
 
-const clip = (v: unknown, n: number) => String(v ?? '').trim().slice(0, n);
+/** Trim, drop control characters (keeping tab/newline only where allowed), cap length. */
+const clean = (v: unknown, n: number, multiline = false) =>
+  String(typeof v === 'string' || typeof v === 'number' ? v : '')
+    .replace(multiline ? /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g : /[\u0000-\u001f\u007f]/g, '')
+    .trim()
+    .slice(0, n);
+
 async function sha256(s: string) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 // WhatsApp template parameters can't contain new lines, tabs or 4+ spaces in a row
 const wa = (s: string, n: number) => s.replace(/[\r\n\t]+/g, ' | ').replace(/ {4,}/g, '   ').trim().slice(0, n) || '-';
+
+/** Reads the body but gives up once it exceeds `max` bytes (Content-Length can be missing or a lie). */
+async function readLimited(req: Request, max: number): Promise<string | null> {
+  const declared = Number(req.headers.get('content-length') ?? '0');
+  if (declared > max) return null;
+  const reader = req.body?.getReader();
+  if (!reader) return '';
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) { await reader.cancel(); return null; }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(total);
+  let o = 0;
+  for (const c of chunks) { all.set(c, o); o += c.byteLength; }
+  return new TextDecoder().decode(all);
+}
+
+/** Visitor IP as seen by Cloudflare (which fronts Supabase). A client can forge the start of X-Forwarded-For, never cf-connecting-ip. */
+function clientIp(req: Request) {
+  const cf = req.headers.get('cf-connecting-ip') ?? req.headers.get('x-real-ip');
+  if (cf) return cf.trim();
+  const xff = (req.headers.get('x-forwarded-for') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  return xff[xff.length - 1] ?? 'unknown';
+}
+
+async function turnstileOk(token: string, ip: string) {
+  if (!TURNSTILE_SECRET) return true; // not configured yet: the other defences still apply
+  if (!token || token.length > 2048) return false;
+  try {
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ secret: TURNSTILE_SECRET, response: token, remoteip: ip }),
+    });
+    const j = await r.json();
+    return j?.success === true;
+  } catch { return false; }
+}
 
 type Row = { id: string; name: string; phone: string; email: string | null; message: string | null };
 
@@ -46,7 +103,7 @@ async function sendWhatsApp(row: Row) {
     if (!r.ok) throw new Error(`${to}: ${r.status} ${(await r.text()).slice(0, 300)}`);
   }));
   const errors = results.flatMap((r) => (r.status === 'rejected' ? [String(r.reason?.message ?? r.reason)] : []));
-  return { sent: results.some((r) => r.status === 'fulfilled'), error: errors.join(' ; ') || null };
+  return { sent: results.every((r) => r.status === 'fulfilled'), error: errors.join(' ; ') || null };
 }
 
 async function sendEmail(row: Row) { // optional backup copy, via Resend
@@ -58,40 +115,64 @@ async function sendEmail(row: Row) { // optional backup copy, via Resend
 }
 
 async function notify(row: Row) {
+  // cost guard: count messages already attempted in the last hour (whatsapp_error is set once an attempt finished)
+  const since = new Date(Date.now() - 3600_000).toISOString();
+  const { count } = await sb.from('enquiries').select('id', { count: 'exact', head: true }).gte('created_at', since).or('whatsapp_sent.eq.true,whatsapp_error.not.is.null');
+  if ((count ?? 0) >= MAX_WHATSAPPS_PER_HOUR) {
+    await sb.from('enquiries').update({ whatsapp_sent: false, whatsapp_error: 'skipped: hourly WhatsApp cap reached (enquiry saved)' }).eq('id', row.id);
+    return;
+  }
   const [wa_] = await Promise.allSettled([sendWhatsApp(row), sendEmail(row)]);
   const res = wa_.status === 'fulfilled' ? wa_.value : { sent: false, error: String(wa_.reason) };
   await sb.from('enquiries').update({ whatsapp_sent: res.sent, whatsapp_error: res.error }).eq('id', row.id);
 }
 
 Deno.serve(async (req) => {
-  const h = cors(req.headers.get('origin') ?? '');
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: h });
+  const origin = req.headers.get('origin') ?? '';
+  const h = cors(origin);
+  if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: h });
   if (req.method !== 'POST') return reply({ error: 'Method not allowed' }, 405, h);
+  if (origin && !ORIGINS.includes(origin)) return reply({ error: 'Forbidden' }, 403, h);
+  if (!(req.headers.get('content-type') ?? '').toLowerCase().startsWith('application/json')) return reply({ error: 'Unsupported content type' }, 415, h);
 
+  const raw = await readLimited(req, MAX_BODY_BYTES);
+  if (raw === null) return reply({ error: 'Request too large' }, 413, h);
   let b: Record<string, unknown>;
-  try { b = await req.json(); } catch { return reply({ error: 'Invalid JSON' }, 400, h); }
+  try { const j = JSON.parse(raw); if (!j || typeof j !== 'object' || Array.isArray(j)) throw new Error('shape'); b = j; } catch { return reply({ error: 'Invalid request' }, 400, h); }
 
-  if (clip(b.website, 200)) return reply({ ok: true }, 200, h); // honeypot filled in => a bot; pretend success
+  if (clean(b.website, 200)) return reply({ ok: true }, 200, h); // honeypot filled in => a bot; pretend success
 
-  const name = clip(b.name, 120), phone = clip(b.phone, 30), email = clip(b.email, 254), message = clip(b.message, 4000);
+  const ip = clientIp(req);
+  if (!(await turnstileOk(clean(b.turnstile, 2048), ip))) return reply({ error: 'Verification failed. Please try again, or call us.' }, 403, h);
+
+  const name = clean(b.name, 120), phone = clean(b.phone, 30), email = clean(b.email, 254), message = clean(b.message, 4000, true);
   const digits = phone.replace(/\D/g, '');
   if (!name) return reply({ error: 'Please enter your name.' }, 422, h);
-  if (digits.length < 8 || digits.length > 15) return reply({ error: 'Please enter a valid phone number.' }, 422, h);
+  if (!/^[0-9+()\-.\s]+$/.test(phone) || digits.length < 8 || digits.length > 15) return reply({ error: 'Please enter a valid phone number.' }, 422, h);
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return reply({ error: 'Please enter a valid email.' }, 422, h);
+  const page = clean(b.source_page, 200);
+  const sourcePage = /^\/[A-Za-z0-9/_\-.]*$/.test(page) ? page : null;
 
-  const ip = (req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown').split(',')[0].trim();
   const ipHash = await sha256(`${ip}|${Deno.env.get('IP_SALT') ?? 'configrow'}`);
+
+  // identical enquiry (same phone + same text) within 10 minutes: acknowledge, don't store or message again
+  const dupSince = new Date(Date.now() - DUPLICATE_WINDOW_MS).toISOString();
+  let dup = sb.from('enquiries').select('id', { count: 'exact', head: true }).eq('phone', phone).gte('created_at', dupSince);
+  dup = message ? dup.eq('message', message) : dup.is('message', null);
+  const { count: dupCount } = await dup;
+  if ((dupCount ?? 0) > 0) return reply({ ok: true }, 200, h);
+
   const since = new Date(Date.now() - 3600_000).toISOString();
   const { count } = await sb.from('enquiries').select('id', { count: 'exact', head: true }).eq('ip_hash', ipHash).gte('created_at', since);
-  if ((count ?? 0) >= MAX_PER_HOUR) return reply({ error: 'Too many requests. Please call us instead.' }, 429, h);
+  if ((count ?? 0) >= MAX_PER_HOUR_PER_VISITOR) return reply({ error: 'Too many requests. Please call us instead.' }, 429, h);
 
   const { data, error } = await sb.from('enquiries').insert({
     name, phone, email: email || null, message: message || null,
-    source_page: clip(b.source_page, 200) || null, ip_hash: ipHash, user_agent: clip(req.headers.get('user-agent'), 300) || null,
+    source_page: sourcePage, ip_hash: ipHash, user_agent: clean(req.headers.get('user-agent'), 300) || null,
   }).select('id, name, phone, email, message').single();
-  if (error || !data) { console.error('insert failed', error); return reply({ error: 'Could not save your enquiry.' }, 500, h); }
+  if (error || !data) { console.error('insert failed', error?.code); return reply({ error: 'Could not save your enquiry.' }, 500, h); }
 
-  const task = notify(data as Row).catch((e) => console.error('notify failed', e));
+  const task = notify(data as Row).catch((e) => console.error('notify failed', String(e?.message ?? e).slice(0, 200)));
   // deno-lint-ignore no-explicit-any
   const rt = (globalThis as any).EdgeRuntime;
   if (rt?.waitUntil) rt.waitUntil(task); else await task; // reply immediately, notify in the background

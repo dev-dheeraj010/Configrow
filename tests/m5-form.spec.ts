@@ -1,8 +1,10 @@
 import { test, expect, Page } from '@playwright/test';
+import { stubTurnstile } from './helpers';
 
 const ENDPOINT = '**/functions/v1/submit-enquiry';
 
 async function open(page: Page) {
+  await stubTurnstile(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.waitForTimeout(1200);
@@ -38,7 +40,7 @@ test('success: sending state, payload, thank-you message', async ({ page }) => {
   await page.getByRole('button', { name: /send enquiry/i }).click();
   await expect(page.getByRole('button', { name: /sending/i })).toBeDisabled();
   await expect(page.getByRole('status')).toContainText("Thanks! We've got your enquiry and will call or WhatsApp you shortly.");
-  expect(body).toMatchObject({ name: 'Test Person', phone: '9876543210', email: 'a@b.in', message: 'Dental clinic in Mysuru', source_page: '/', website: '' });
+  expect(body).toMatchObject({ name: 'Test Person', phone: '9876543210', email: 'a@b.in', message: 'Dental clinic in Mysuru', source_page: '/', website: '', turnstile: 'tok' });
   await page.screenshot({ path: 'shots/m5/1440x900-sent.png' });
   await expect(page.getByLabel('NAME')).toHaveValue('');
 });

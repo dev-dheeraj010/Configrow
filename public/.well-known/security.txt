@@ -1,0 +1,5 @@
+Contact: mailto:info@configrow.in
+Expires: 2027-10-17T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://www.configrow.in/.well-known/security.txt
+Policy: https://www.configrow.in/privacy
