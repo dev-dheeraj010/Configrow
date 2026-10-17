@@ -8,7 +8,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "npm run build:test && node scripts/with-dist.mjs playwright test",
-    "build:test": "node scripts/with-dist.mjs next build"
+    "build:test": "node scripts/with-dist.mjs next build",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "^9.8.2",
@@ -30,5 +31,8 @@
   },
   "overrides": {
     "postcss": "^8.5.23"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   }
 }
