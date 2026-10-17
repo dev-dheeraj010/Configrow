@@ -106,25 +106,41 @@ async function sendWhatsApp(row: Row) {
   return { sent: results.every((r) => r.status === 'fulfilled'), error: errors.join(' ; ') || null };
 }
 
-async function sendEmail(row: Row) { // optional backup copy, via Resend
-  const key = Deno.env.get('RESEND_API_KEY'), to = Deno.env.get('NOTIFY_EMAIL');
-  if (!key || !to) return;
-  await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: Deno.env.get('NOTIFY_FROM') ?? 'Configrow <onboarding@resend.dev>', to: [to], subject: `New enquiry from ${row.name}`,
-      text: `Name: ${row.name}\nPhone: ${row.phone}\nEmail: ${row.email ?? 'not given'}\n\n${row.message ?? ''}` }) });
+/** Plain-text alert to every address in NOTIFY_EMAIL (comma separated), through Resend's HTTPS API. Free tier: 3,000/month. */
+async function sendEmail(row: Row) {
+  const key = Deno.env.get('RESEND_API_KEY');
+  const to = (Deno.env.get('NOTIFY_EMAIL') ?? '').split(',').map((s) => s.trim()).filter((s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s));
+  if (!key || !to.length) return { sent: false, error: 'Email is not configured' };
+  const when = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: Deno.env.get('NOTIFY_FROM') ?? 'Configrow <onboarding@resend.dev>',
+      to,
+      ...(row.email ? { reply_to: row.email } : {}), // hitting Reply answers the enquirer
+      subject: `New Configrow enquiry from ${row.name}`.slice(0, 150),
+      text: `New Configrow enquiry\n\nName: ${row.name}\nPhone: ${row.phone}\nEmail: ${row.email ?? 'not given'}\nReceived: ${when}\n\nAbout their business:\n${row.message ?? 'not given'}\n`,
+    }),
+  });
+  if (!r.ok) return { sent: false, error: `${r.status} ${(await r.text()).slice(0, 300)}` };
+  return { sent: true, error: null };
 }
 
 async function notify(row: Row) {
-  // cost guard: count messages already attempted in the last hour (whatsapp_error is set once an attempt finished)
+  // cost guard: count alerts already attempted in the last hour (an *_error / *_sent value is set once an attempt finished)
   const since = new Date(Date.now() - 3600_000).toISOString();
-  const { count } = await sb.from('enquiries').select('id', { count: 'exact', head: true }).gte('created_at', since).or('whatsapp_sent.eq.true,whatsapp_error.not.is.null');
+  const { count } = await sb.from('enquiries').select('id', { count: 'exact', head: true }).gte('created_at', since)
+    .or('whatsapp_sent.eq.true,whatsapp_error.not.is.null,email_sent.eq.true,email_error.not.is.null');
   if ((count ?? 0) >= MAX_WHATSAPPS_PER_HOUR) {
-    await sb.from('enquiries').update({ whatsapp_sent: false, whatsapp_error: 'skipped: hourly WhatsApp cap reached (enquiry saved)' }).eq('id', row.id);
+    const why = 'skipped: hourly alert cap reached (enquiry saved)';
+    await sb.from('enquiries').update({ whatsapp_sent: false, whatsapp_error: why, email_sent: false, email_error: why }).eq('id', row.id);
     return;
   }
-  const [wa_] = await Promise.allSettled([sendWhatsApp(row), sendEmail(row)]);
-  const res = wa_.status === 'fulfilled' ? wa_.value : { sent: false, error: String(wa_.reason) };
-  await sb.from('enquiries').update({ whatsapp_sent: res.sent, whatsapp_error: res.error }).eq('id', row.id);
+  // each channel is independent: one failing never blocks the other, and the enquiry is already saved
+  const [w, e] = await Promise.allSettled([sendWhatsApp(row), sendEmail(row)]);
+  const wa_ = w.status === 'fulfilled' ? w.value : { sent: false, error: String(w.reason).slice(0, 300) };
+  const em = e.status === 'fulfilled' ? e.value : { sent: false, error: String(e.reason).slice(0, 300) };
+  await sb.from('enquiries').update({ whatsapp_sent: wa_.sent, whatsapp_error: wa_.error, email_sent: em.sent, email_error: em.error }).eq('id', row.id);
 }
 
 Deno.serve(async (req) => {
