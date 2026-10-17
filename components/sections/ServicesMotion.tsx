@@ -28,12 +28,15 @@ export default function ServicesMotion() {
     const hidden = { opacity: 0, x: 90, y: 70, scale: 0.94 };
 
     mm.add('(min-width: 801px)', () => {
+      // hide first, explicitly (does not depend on how a GSAP version renders fromTo start values inside a scrubbed timeline)
+      gsap.set(intro, { opacity: 0, y: 24 });
+      gsap.set(cards, hidden);
       const tl = scrubbed('#services', RANGE.pin, 0.6);
       const [h0, h1] = SERVICES_HEAD;
-      tl.fromTo(intro, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: h1 - h0, stagger: 0, ease: 'power2.out', immediateRender: true }, h0);
+      tl.fromTo(intro, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: h1 - h0, stagger: 0, ease: 'power2.out', immediateRender: false }, h0);
       cards.forEach((card, i) => {
         const [a, b] = SERVICES_CARDS[i];
-        tl.fromTo(card, hidden, { opacity: 1, x: 0, y: 0, scale: 1, duration: b - a, ease: 'power3.out', immediateRender: true }, a);
+        tl.fromTo(card, hidden, { opacity: 1, x: 0, y: 0, scale: 1, duration: b - a, ease: 'power3.out', immediateRender: false }, a);
       });
       tl.set({}, {}, 1); // pad the timeline to exactly 1 so time == pin progress
     });

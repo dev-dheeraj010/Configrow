@@ -53,9 +53,9 @@ export default function PricingStory() {
       R = new THREE.WebGLRenderer({ canvas: cv.current!, antialias: true, alpha: true });
       R.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       const scene = (rootScene = new THREE.Scene()), cam = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
-      scene.add(new THREE.AmbientLight(0x6f8fd8, 0.8));
-      const pl = new THREE.PointLight(0x7fa6ff, 2.4, 60); pl.position.set(3, 4, 6); scene.add(pl);
-      const dl = new THREE.DirectionalLight(0xffffff, 0.7); dl.position.set(-2, 2, 6); scene.add(dl);
+      scene.add(new THREE.AmbientLight(0x6f8fd8, 1.2 * Math.PI));
+      const pl = new THREE.PointLight(0x7fa6ff, 2.4 * Math.PI, 60, 1); pl.position.set(3, 4, 6); scene.add(pl);
+      const dl = new THREE.DirectionalLight(0xffffff, 1.1 * Math.PI); dl.position.set(-2, 2, 6); scene.add(dl);
 
       const tileG = new THREE.ExtrudeGeometry(rr(W, RR), { depth: 0.3, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 2, curveSegments: 12 });
       tileG.translate(0, 0, -0.3);

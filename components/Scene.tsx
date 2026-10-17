@@ -60,9 +60,9 @@ function Rig() {
 
   return (
     <>
-      <ambientLight color={0x6f8fd8} intensity={0.8} />
-      <pointLight position={[3, 4, 5]} color={0x7fa6ff} intensity={2.4} distance={30} />
-      <directionalLight position={[-2, 2, 6]} intensity={0.7} />
+      <ambientLight color={0x6f8fd8} intensity={1.2 * Math.PI} />
+      <pointLight position={[3, 4, 5]} color={0x7fa6ff} intensity={2.4 * Math.PI} distance={30} decay={1} />
+      <directionalLight position={[-2, 2, 6]} intensity={1.1 * Math.PI} />
       <primitive object={rig.G} />
     </>
   );
