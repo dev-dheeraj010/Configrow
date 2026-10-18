@@ -9,3 +9,4 @@ test-results
 playwright-report
 shots
 .next-test
+deploy-package
