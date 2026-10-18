@@ -2,7 +2,7 @@
 
 ## Who and what
 Configrow is a web development agency for local businesses. It sells premium, SEO-ready websites built for lead generation. This repo is Configrow's own marketing website. Brand promise: *"Great websites build trust. Trust drives leads. Leads grow businesses."*
-- Site: www.configrow.in · Email: info@configrow.in · Phone: +91 94809 33776 · Instagram: instagram.com/configrow.in · YouTube: @Configrow.01 · X: @Configrow_01
+- Site: www.configrow.in · Email: info@configrow.in · Phone: +91 78923 17834 · Instagram: instagram.com/configrow.in · YouTube: @Configrow.01 · X: @Configrow_01
 - Services: HTML Web Development · Next.js / Node.js · PHP Web Development · App development (coming soon)
 - Founders: Praadhyun Sai H (Marketing and Sales), Dheeraj Murthy (Development). Do not put founder names on the site unless asked.
 

@@ -16,7 +16,7 @@
 
 ## Off-page (cannot be done in code; do these in order)
 **Week 1: foundations**
-- **Google Business Profile.** Create it as a service-area business. Use exactly the same name, phone (+91 94809 33776) and email as the site. Add the website, services (HTML, Next.js / Node.js, PHP web development), and photos of work you have delivered.
+- **Google Business Profile.** Create it as a service-area business. Use exactly the same name, phone (+91 78923 17834) and email as the site. Add the website, services (HTML, Next.js / Node.js, PHP web development), and photos of work you have delivered.
 - **Consistent profiles.** Make the name, one-line description and link identical on YouTube, X and Instagram, and put `https://www.configrow.in` in each bio. These already appear in the site's `sameAs`, which links them to the brand.
 - **Business listings (free):** Justdial, Sulekha, IndiaMART, Clutch, GoodFirms, LinkedIn company page. Keep the name, phone and email identical everywhere.
 

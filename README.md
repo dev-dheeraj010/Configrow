@@ -65,4 +65,4 @@ public/         cg-mark.png, logo-original.svg
 
 ## Brand
 Colours: #00091b (main), #0652dd (accent, used sparingly), white text. Font: Inter (+ JetBrains Mono for small labels).
-Contact: www.configrow.in · info@configrow.in · +91 94809 33776 · Instagram @configrow.dev
+Contact: www.configrow.in · info@configrow.in · +91 78923 17834 · Instagram @configrow.dev

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const SITE = 'https://www.configrow.in';
 export const BRAND = 'Configrow';
-export const PHONES = ['+91 94809 33776', '+91 78923 17834'];
+export const PHONES = ['+91 78923 17834', '+91 94809 33776'];
 export const SOCIALS = ['https://www.youtube.com/@Configrow.01', 'https://x.com/Configrow_01', 'https://www.instagram.com/configrow.in'];
 // A page that sets its own openGraph does not inherit the root file-based image, so it is attached explicitly.
 const OG_IMAGE = { url: '/opengraph-image', width: 1200, height: 630, alt: 'Configrow: Great websites build trust.' };
