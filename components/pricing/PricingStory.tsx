@@ -167,7 +167,7 @@ export default function PricingStory() {
           const lis = Array.from(pn.querySelectorAll('li')), num = pn.querySelector('.num') as HTMLElement, n = lis.length, cnt = { v: 0 };
           num.textContent = '0'; // server HTML carries the real price (for crawlers and no-JS); the count-up starts from 0
           if (phone) tl.fromTo(pn, { opacity: 0 }, { opacity: 1, duration: 0.3 }, b);
-          tl.fromTo(rec ? [cap, rec] : cap, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3 }, b);                   // 1. plan name
+          tl.fromTo(rec ? [cap, rec] : cap, { opacity: 0, y: 24, scale: 0.85 }, { opacity: 1, y: 0, scale: 1, ease: 'back.out(1.6)', duration: 0.3 }, b);                   // 1. plan name
           if (phone && i > 0) tl.fromTo(O[i], { vis: 0 }, { vis: 1, duration: 0.4 }, b);
           tl.to(O[i], { build: 1, duration: 0.55 }, b).to(O[i], { glow: GL[i], duration: 1.6 }, b + 0.5);                      //    the 3D object builds
           lis.forEach((li, k) => tl.fromTo(li, { opacity: 0, x: -40, filter: 'blur(8px)', clipPath: 'inset(0 100% 0 0)' },    // 2. features, one per scroll step
@@ -244,8 +244,8 @@ export default function PricingStory() {
           <div className="cl">
             <p>Not sure what&apos;s right for you?</p>
             <h2>Your answer is just a ring away<b>.</b></h2>
-            <a className="call" href="tel:+919480933776">Call +91 94809 33776</a>
-            <p className="call-alt">or call <a href="tel:+917892317834">+91 78923 17834</a></p>
+            <a className="call" href="tel:+917892317834">Call +91 78923 17834</a>
+            <p className="call-alt">or call <a href="tel:+919480933776">+91 94809 33776</a></p>
           </div>
         </div>
         <button className="skip" type="button" onClick={skip}>SKIP TO PLANS ↓</button>

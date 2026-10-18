@@ -3,7 +3,7 @@ import { test, expect, APIRequestContext } from '@playwright/test';
 // Everything here reads the RAW server HTML (no JavaScript), i.e. what a crawler sees on first fetch.
 const PAGES: Record<string, { title: RegExp; copy: string[] }> = {
   '/': { title: /Configrow/, copy: ['Great websites build trust', 'Built for real results', 'HTML Web Development', 'Next.js / Node.js', 'PHP Web Development', 'What makes us Configrow', 'Exquisite design language', 'Continuous care, zero compromise', 'Trust drives leads', "Let&#x27;s build something extraordinary", 'APP DEVELOPMENT — COMING SOON'] },
-  '/pricing': { title: /Pricing/, copy: ['Three plans', '10,999', '14,549', '19,999', 'Fully custom professional 3D website', 'Basic SEO-friendly structure', 'Call +91 94809 33776', 'RECOMMENDED'] },
+  '/pricing': { title: /Pricing/, copy: ['Three plans', '10,999', '14,549', '19,999', 'Fully custom professional 3D website', 'Basic SEO-friendly structure', 'Call +91 78923 17834', 'RECOMMENDED'] },
   '/faq': { title: /FAQ/, copy: ['Which plan should I choose?', '7–10 business days', '40% advance', 'There is no upgrade policy'] },
   '/privacy': { title: /Privacy/, copy: ['Digital Personal Data Protection', 'Information we collect'] },
   '/terms': { title: /Terms/, copy: ['cannot be refunded', 'Master Services Agreement'] },

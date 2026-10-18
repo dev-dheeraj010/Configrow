@@ -16,7 +16,7 @@ const txt = (page: Page, sel: string) => page.locator(sel).first().innerText();
 
 test('prices are real DOM text in the server HTML', async ({ request }) => {
   const html = await (await request.get('/pricing')).text();
-  for (const s of ['10,999', '14,549', '19,999', 'Foundation', 'Standard', 'Next-gen', 'Fully custom professional 3D website', 'Multiple hosting support', '+91 94809 33776']) expect(html).toContain(s);
+  for (const s of ['10,999', '14,549', '19,999', 'Foundation', 'Standard', 'Next-gen', 'Fully custom professional 3D website', 'Multiple hosting support', '+91 78923 17834']) expect(html).toContain(s);
   expect((html.match(/<h1/g) ?? []).length).toBe(1);
 });
 
@@ -53,7 +53,7 @@ for (const v of VIEWPORTS) {
     await atUnit(page, F + 1.9);
     await expect(page.locator('.fc')).toHaveCount(3);
     await expect(page.locator('.fc .bd')).toHaveText('RECOMMENDED');
-    await expect(page.locator('a.call')).toHaveText('Call +91 94809 33776');
+    await expect(page.locator('a.call')).toHaveText('Call +91 78923 17834');
     expect(await page.locator('.fc').nth(0).evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
     if (v.w <= 800) expect(await page.locator('.fc ul').first().isVisible()).toBe(false);
     expect(errors.filter((e) => !/favicon|sharp/.test(e))).toEqual([]);
