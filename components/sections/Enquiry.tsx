@@ -91,7 +91,7 @@ export default function Enquiry() {
           </SpecularButton>
           <p role="status" aria-live="polite" style={{ fontSize: 14, minHeight: 24 }}>
             {state === 'sent' && "Thanks! We've got your enquiry and will call or WhatsApp you shortly."}
-            {state === 'error' && (<>We couldn&apos;t send that. Please call <a className="ul" href="tel:+919480933776">+91 94809 33776</a> or email <a className="ul" href="mailto:info@configrow.in">info@configrow.in</a>.</>)}
+            {state === 'error' && (<>We couldn&apos;t send that. Please call <a className="ul" href="tel:+917892317834">+91 78923 17834</a> or email <a className="ul" href="mailto:info@configrow.in">info@configrow.in</a>.</>)}
           </p>
         </form>
         <p className="rv" style={{ fontSize: 14 }}>Not sure which plan fits? <Link className="ul" href="/pricing">See our pricing →</Link></p>

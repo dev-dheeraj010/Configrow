@@ -52,7 +52,7 @@ test('error: shows phone/email fallback', async ({ page }) => {
   await page.getByRole('button', { name: /send enquiry/i }).click();
   const st = page.getByRole('status');
   await expect(st).toContainText("We couldn't send that");
-  await expect(st.getByRole('link', { name: '+91 94809 33776' })).toHaveAttribute('href', 'tel:+919480933776');
+  await expect(st.getByRole('link', { name: '+91 78923 17834' })).toHaveAttribute('href', 'tel:+917892317834');
   await expect(st.getByRole('link', { name: 'info@configrow.in' })).toHaveAttribute('href', 'mailto:info@configrow.in');
   await page.screenshot({ path: 'shots/m5/1440x900-error.png' });
 });
