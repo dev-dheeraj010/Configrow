@@ -59,6 +59,18 @@ export default function ScrollDirector() {
       }
 
       if (document.getElementById('enquiry')) move(scrubbed('#enquiry', RANGE.enter), 'growth', 'enquiry');
+
+      // phones: the fixed logo would be sliced by the footer sliding over it, so fade it out while the footer enters
+      // (footer top travels from the bottom of the viewport to 40% down the viewport; scrolling back restores it)
+      const foot = document.querySelector('footer');
+      if (!desk && foot) {
+        const glEl = () => document.querySelector<HTMLElement>('.gl');
+        const st = ScrollTrigger.create({
+          trigger: foot, start: 'top bottom', end: 'top 40%',
+          onUpdate: (self) => { const el = glEl(); if (el) el.style.opacity = String(1 - self.progress); },
+        });
+        return () => { st.kill(); const el = glEl(); if (el) el.style.opacity = ''; };
+      }
     });
     return () => mm.revert();
   }, []);

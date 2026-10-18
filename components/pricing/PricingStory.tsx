@@ -87,15 +87,17 @@ export default function PricingStory() {
       const mk = (layers: number, nr: number) => {
         const g = new THREE.Group(), o: any = { g, build: 0, glow: 0, vis: 1, ms: [], rings: [] };
         for (let k = layers - 1; k >= 0; k--) {
-          const m = new THREE.MeshStandardMaterial({ color: 0x07102e, metalness: 0.55, roughness: 0.4, transparent: true, opacity: 0, emissive: 0x0652dd, emissiveIntensity: 0 });
-          const t = new THREE.Mesh(tileG, m); t.position.set(k * 0.3, -k * 0.3, -k * 0.6); g.add(t); o.ms.push(m);
+          // polygonOffset pushes each tile back so the mark and rim in front of it never lose the depth test mid-build
+          const m = new THREE.MeshStandardMaterial({ color: 0x07102e, metalness: 0.55, roughness: 0.4, transparent: true, opacity: 0, emissive: 0x0652dd, emissiveIntensity: 0, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
+          const t = new THREE.Mesh(tileG, m); t.position.set(k * 0.3, -k * 0.3, -k * 0.6); t.renderOrder = layers - 1 - k; g.add(t); o.ms.push(m);
         }
+        // transparent meshes are sorted per object, so draw order is fixed: tiles (back to front), rim, mark, edge lines
         o.rimM = new THREE.MeshBasicMaterial({ color: 0x7f93bd, transparent: true, opacity: 0 });
-        const rim = new THREE.Mesh(rimG, o.rimM); rim.position.z = -0.04; g.add(rim);
+        const rim = new THREE.Mesh(rimG, o.rimM); rim.position.z = -0.04; rim.renderOrder = layers; g.add(rim);
         o.mM = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.3, roughness: 0.35, transparent: true, opacity: 0, emissive: 0x0652dd, emissiveIntensity: 0 });
-        const mm = new THREE.Mesh(markG, o.mM); mm.position.set(0, -0.11, 0.035); g.add(mm);
+        const mm = new THREE.Mesh(markG, o.mM); mm.position.set(0, -0.11, 0.05); mm.renderOrder = layers + 1; g.add(mm);
         o.lm = new THREE.LineBasicMaterial({ color: 0x6f87b8, transparent: true });
-        const l1 = new THREE.LineSegments(eT, o.lm), l2 = new THREE.LineSegments(eM, o.lm); l2.position.copy(mm.position); g.add(l1, l2);
+        const l1 = new THREE.LineSegments(eT, o.lm), l2 = new THREE.LineSegments(eM, o.lm); l2.position.copy(mm.position); l1.renderOrder = l2.renderOrder = layers + 2; g.add(l1, l2);
         for (let z = 0; z < nr; z++) {
           const r = new THREE.Mesh(new THREE.TorusGeometry(2.8, 0.012, 8, 160), new THREE.MeshBasicMaterial({ color: 0x9fb0d0, transparent: true, opacity: 0 }));
           r.rotation.x = z ? 1.2 : 0; r.scale.setScalar(z ? 1.3 : 1); g.add(r); o.rings.push(r);
@@ -123,8 +125,11 @@ export default function PricingStory() {
           o.g.position.set((nar() ? 0 : i * Wu) + off[0], off[1], 0);
           o.g.scale.setScalar((nar() ? 0.6 : 0.85) * (0.6 + 0.4 * b));
           o.g.rotation.set(0.1, (1 - b) * -1.2 + Math.sin(t * 0.6 + i) * 0.22, 0);
-          o.ms.forEach((m: any, k: number) => { m.opacity = v * b * (1 - k * 0.18); m.emissiveIntensity = g * 0.08; });
-          o.mM.opacity = v * b; o.rimM.opacity = v * b; o.mM.emissiveIntensity = g * 0.9;
+          // phones stack all three objects in the same spot: an inactive one must not exist at all, and a translucent one must not
+          // write depth, otherwise its (invisible) tile slices through the active tile and the mark
+          o.g.visible = v > 0.01;
+          o.ms.forEach((m: any, k: number) => { m.opacity = v * b * (1 - k * 0.18); m.depthWrite = m.opacity > 0.98; m.emissiveIntensity = g * 0.08; });
+          o.mM.opacity = v * b; o.rimM.opacity = v * b; o.mM.depthWrite = o.mM.opacity > 0.98; o.mM.emissiveIntensity = g * 0.9;
           o.lm.opacity = v * (1 - b * 0.75); o.lm.color.copy(c1).lerp(c2, g);
           o.h.material.opacity = v * g * 0.4 * (b > 0.01 ? 1 : 0); o.h.scale.setScalar(7 + g * 4);
           o.rings.forEach((r: any) => { r.material.opacity = v * g * 0.45; r.rotation.z += 0.004; });
@@ -240,6 +245,7 @@ export default function PricingStory() {
             <p>Not sure what&apos;s right for you?</p>
             <h2>Your answer is just a ring away<b>.</b></h2>
             <a className="call" href="tel:+919480933776">Call +91 94809 33776</a>
+            <p className="call-alt">or call <a href="tel:+917892317834">+91 78923 17834</a></p>
           </div>
         </div>
         <button className="skip" type="button" onClick={skip}>SKIP TO PLANS ↓</button>

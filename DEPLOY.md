@@ -42,6 +42,14 @@ Repo: https://github.com/dev-dheeraj010/Configrow  (branch `main`)
 - **Google Search Console:** add the property, verify with `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`, submit `https://www.configrow.in/sitemap.xml` (see `SEO.md`).
 - **Alerts:** until email (Resend) or WhatsApp is live, check the `enquiries` table in Supabase daily.
 
+## 3a. Enquiry email alerts (Resend), set up and working
+- Resend domain `mail.configrow.in` (region Tokyo, ap-northeast-1), verified. DNS records live in Hostinger: TXT `resend._domainkey.mail`, CNAME `rsend.mail` -> `rsend-apne1.forge.rmta.net`, CNAME `send.mail` -> `send.forge.rmta.net`. Leave the existing Hostinger MX records for `configrow.in` alone. "Enable Receiving" is off (sending only).
+- Supabase secrets (set with `npx supabase secrets set ...`, never in chat or the repo):
+  - `RESEND_API_KEY`: Resend key with **Sending access** only, restricted to `mail.configrow.in`. To rotate, create a new key, set it, then delete the old one.
+  - `NOTIFY_EMAIL`: `configrow.in@gmail.com,dheera.murthy@gmail.com,psh31213121@gmail.com` (company inbox + both founders, comma separated).
+  - `NOTIFY_FROM`: `Configrow <enquiries@mail.configrow.in>` (must end in the verified domain).
+- Each enquiry row records `email_sent` / `email_error`. Email and WhatsApp are sent independently, and a failure of either never affects the visitor.
+
 ## 4. Smoke test (run after every deploy)
 ```bash
 node scripts/smoke.mjs https://www.configrow.in

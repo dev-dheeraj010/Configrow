@@ -17,6 +17,11 @@ nav{display:flex;gap:6px;font:12px var(--font-mono),monospace;letter-spacing:.1e
 .mb{display:none;width:40px;height:40px;border:1px solid var(--ln);border-radius:12px;background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0}.mb span{display:block;width:16px;height:1.5px;background:var(--tx)}
 .cta2{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));right:clamp(16px,2vw,28px);z-index:5;margin:0;opacity:0;pointer-events:none;transform:translateY(-10px);transition:opacity .3s,transform .3s,box-shadow .25s}.cta2.show{opacity:1;pointer-events:auto;transform:none}
 #mnav{position:fixed;inset:0;z-index:25;background:var(--bg);display:flex;flex-direction:column;justify-content:center;gap:4px;padding:100px clamp(20px,6vw,96px) 40px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s}#mnav.on{opacity:1;visibility:visible;pointer-events:auto}
+/* hamburger: the two bars cross into an X, then the menu fades in and its links rise one after another */
+.mb span{transition:transform .35s cubic-bezier(.2,.7,.2,1)}.mb.open span:first-child{transform:translateY(3.25px) rotate(45deg)}.mb.open span:last-child{transform:translateY(-3.25px) rotate(-45deg)}
+#mnav{clip-path:circle(0% at calc(100% - 52px) 44px);transition:opacity .3s,visibility .3s,clip-path .55s cubic-bezier(.2,.7,.2,1)}#mnav.on{clip-path:circle(150% at calc(100% - 52px) 44px)}
+#mnav a.ml{opacity:0;transform:translateY(22px);transition:opacity .4s,transform .5s cubic-bezier(.2,.7,.2,1)}#mnav.on a.ml{opacity:1;transform:none;transition-delay:calc(.12s + var(--i,0)*.06s)}
+@media(prefers-reduced-motion:reduce){.mb span,#mnav,#mnav a.ml{transition:none!important}#mnav{clip-path:none}#mnav a.ml{opacity:1;transform:none}}
 #mnav a.ml{font-size:clamp(34px,10vw,56px);font-weight:700;text-transform:uppercase;letter-spacing:-.03em;line-height:1.15}#mnav a.ml i{font:11px var(--font-mono),monospace;font-style:normal;color:var(--hi);margin-right:14px;letter-spacing:.14em}
 #mnav .mc{position:absolute;top:calc(20px + env(safe-area-inset-top,0px));right:20px;background:none;border:1px solid var(--ln);color:var(--tx);border-radius:999px;padding:10px 18px;font:11px var(--font-mono),monospace;letter-spacing:.14em;cursor:pointer}
 #bar{position:fixed;top:0;left:0;height:2px;width:100%;background:var(--ac);transform:scaleX(0);transform-origin:0 50%;z-index:6}
@@ -141,6 +146,7 @@ mark{background:rgba(255,196,60,.16);color:#ffcf66;border-radius:4px;padding:0 4
 .cl h2{margin:6px 0 0;font-size:clamp(26px,3.4vw,48px)}.cl b{color:var(--ac)}
 .call{position:relative;display:inline-flex;margin-top:22px;padding:15px 32px;border-radius:999px;border:1px solid #0061ff;background:rgba(0,83,218,.2);color:#f5f5f5;font-weight:500;pointer-events:auto;box-shadow:0 0 30px rgba(0,83,218,.4)}
 .call::before,.call::after{content:'';position:absolute;inset:-1px;border-radius:inherit;border:1px solid #0061ff;animation:ring 2.4s ease-out infinite}.call::after{animation-delay:1.2s}
+.call-alt{margin-top:14px;font-size:14px;color:var(--muted,rgba(242,245,251,.6));pointer-events:auto}.call-alt a{color:inherit;text-decoration:underline;text-underline-offset:3px}.call-alt a:hover{color:#f2f5fb}
 @keyframes ring{from{transform:scale(1);opacity:.7}to{transform:scale(1.35,1.8);opacity:0}}@media(prefers-reduced-motion:reduce){.call::before,.call::after{animation:none;opacity:0}}
 @media(max-width:800px){.tx{left:6vw;width:88vw;top:auto;bottom:5vh;transform:none}.ft{font-size:13px;gap:5px}.cap{font-size:18px}.rs,.num{font-size:40px}#rail{display:none}.fr{gap:2vw}.fc{width:30vw;height:34vh;padding:56px 8px 12px}.fc .cap{font-size:12px;padding:5px 9px;white-space:nowrap}.fc small{display:none}.fc ul{display:none}.fp{font-size:18px}}
 

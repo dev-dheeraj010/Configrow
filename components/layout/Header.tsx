@@ -81,14 +81,14 @@ export default function Header() {
         <div className="hr">
           <nav aria-label="Primary">{NAV.map((n) => <Pill key={n.id} label={n.label} href={n.href} active={active === n.id} />)}</nav>
           <SpecularButton href="/#enquiry" size="sm" radius={12}>Start a project <span>→</span></SpecularButton>
-          <button ref={opener} className="mb" type="button" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><span /><span /></button>
+          <button ref={opener} className={'mb' + (menu ? ' open' : '')} type="button" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><span /><span /></button>
         </div>
       </header>
       {/* while the bar is hidden the call to action stays reachable */}
       <SpecularButton href="/#enquiry" size="sm" radius={12} className={'cta2' + (hidden ? ' show' : '')}>Start a project <span>→</span></SpecularButton>
       <div id="mnav" ref={menuRef} className={menu ? 'on' : ''} role="dialog" aria-modal="true" aria-label="Menu" aria-hidden={!menu}>
         <button className="mc" type="button" onClick={() => { setMenu(false); opener.current?.focus(); }}>CLOSE</button>
-        {NAV.map((n) => <Link key={n.id} className="ml" href={n.href} onClick={() => setMenu(false)}><i>{n.n}</i>{n.label}</Link>)}
+        {NAV.map((n, k) => <Link key={n.id} className="ml" style={{ ['--i' as string]: k }} href={n.href} onClick={() => setMenu(false)}><i>{n.n}</i>{n.label}</Link>)}
       </div>
     </>
   );
